@@ -136,3 +136,4 @@ dist
 .pnp.*
 
 gaggedusers.txt
+docker-compose.yml
