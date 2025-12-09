@@ -37,7 +37,7 @@ client.on("clientReady", async () => {
 client.on("messageCreate", async (msg) => {
     // This is called when a message is received.
     try {
-        if ((msg.channel.id != process.env.CHANNELID) || (msg.webhookId) || (msg.author.bot)) { return }
+        if ((msg.channel.id != process.env.CHANNELID) || (msg.webhookId) || (msg.author.bot) || (msg.embeds)) { return }
         //console.log(msg.member.displayAvatarURL())
         //console.log(msg.member.displayName)
         garbleMessage(msg);
