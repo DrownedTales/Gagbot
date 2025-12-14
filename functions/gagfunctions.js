@@ -32,7 +32,7 @@ const assignGag = (userID, gagtype = "ball", intensity = 5) => {
         gagtype: gagtype,
         intensity: intensity
     }
-    fs.writeFileSync(`./gaggedusers.txt`, JSON.stringify(process.gags));
+    fs.writeFileSync(`${process.GagbotSavedFileDirectory}/gaggedusers.txt`, JSON.stringify(process.gags));
 }
 
 const getGag = (userID) => {
@@ -48,13 +48,13 @@ const getGagIntensity = (userID) => {
 const deleteGag = (userID) => {
     if (process.gags == undefined) { process.gags = {} }
     delete process.gags[userID]
-    fs.writeFileSync(`./gaggedusers.txt`, JSON.stringify(process.gags));
+    fs.writeFileSync(`${process.GagbotSavedFileDirectory}/gaggedusers.txt`, JSON.stringify(process.gags));
 }
 
 const assignMitten = (userID) => {
     if (process.mitten == undefined) { process.mitten = {} }
     process.mitten[userID] = true
-    fs.writeFileSync(`./mittenedusers.txt`, JSON.stringify(process.mitten));
+    fs.writeFileSync(`${process.GagbotSavedFileDirectory}/mittenedusers.txt`, JSON.stringify(process.mitten));
 }
 
 const getMitten = (userID) => {
@@ -65,7 +65,7 @@ const getMitten = (userID) => {
 const deleteMitten = (userID) => {
     if (process.mitten == undefined) { process.mitten = {} }
     delete process.mitten[userID]
-    fs.writeFileSync(`./mittenedusers.txt`, JSON.stringify(process.mitten));
+    fs.writeFileSync(`${process.GagbotSavedFileDirectory}/mittenedusers.txt`, JSON.stringify(process.mitten));
 }
 
 const splitMessage = (text) => {

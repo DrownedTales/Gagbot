@@ -7,7 +7,7 @@ const assignChastity = (user, keyholder) => {
     process.chastity[user] = {
         keyholder: keyholder ? keyholder : "unlocked"
     }
-    fs.writeFileSync(`./chastityusers.txt`, JSON.stringify(process.chastity));
+    fs.writeFileSync(`${process.GagbotSavedFileDirectory}/chastityusers.txt`, JSON.stringify(process.chastity));
 }
 
 const getChastity = (user) => {
@@ -18,7 +18,7 @@ const getChastity = (user) => {
 const removeChastity = (user) => {
     if (process.chastity == undefined) { process.chastity = {} }
     delete process.chastity[user];
-    fs.writeFileSync(`./chastityusers.txt`, JSON.stringify(process.chastity));
+    fs.writeFileSync(`${process.GagbotSavedFileDirectory}/chastityusers.txt`, JSON.stringify(process.chastity));
 }
 
 const assignVibe = (user, intensity) => {
@@ -26,7 +26,7 @@ const assignVibe = (user, intensity) => {
     process.vibe[user] = {
         intensity: intensity
     }
-    fs.writeFileSync(`./vibeusers.txt`, JSON.stringify(process.vibe));
+    fs.writeFileSync(`${process.GagbotSavedFileDirectory}/vibeusers.txt`, JSON.stringify(process.vibe));
 }
 
 const getVibe = (user) => {
@@ -37,7 +37,7 @@ const getVibe = (user) => {
 const removeVibe = (user) => {
     if (process.vibe == undefined) { process.chastity = {} }
     delete process.vibe[user];
-    fs.writeFileSync(`./vibeusers.txt`, JSON.stringify(process.vibe));
+    fs.writeFileSync(`${process.GagbotSavedFileDirectory}/vibeusers.txt`, JSON.stringify(process.vibe));
 }
 
 const arousedtexts = [

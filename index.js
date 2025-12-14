@@ -7,38 +7,44 @@ const { garbleMessage } = require(`./functions/gagfunctions.js`)
 
 dotenv.config()
 
+let GagbotSavedFileDirectory = process.env.GAGBOTFILEDIRECTORY ? process.env.GAGBOTFILEDIRECTORY : __dirname
+
+process.GagbotSavedFileDirectory = GagbotSavedFileDirectory // Because honestly, I dont know WHY global stuff in index.js can't be accessble everywhere
+
+console.log(fs.readdirSync(process.GagbotSavedFileDirectory))
+
 try {
-    process.gags = JSON.parse(fs.readFileSync(`./gaggedusers.txt`))
+    process.gags = JSON.parse(fs.readFileSync(`${process.GagbotSavedFileDirectory}/gaggedusers.txt`))
 }
 catch (err) { 
     console.log(err);
 }
 try {
-    process.mitten = JSON.parse(fs.readFileSync(`./mittenedusers.txt`))
+    process.mitten = JSON.parse(fs.readFileSync(`${process.GagbotSavedFileDirectory}/mittenedusers.txt`))
 }
 catch (err) { 
     console.log(err);
 }
 try {
-    process.chastity = JSON.parse(fs.readFileSync(`./chastityusers.txt`))
+    process.chastity = JSON.parse(fs.readFileSync(`${process.GagbotSavedFileDirectory}/chastityusers.txt`))
 }
 catch (err) { 
     console.log(err);
 }
 try {
-    process.vibe = JSON.parse(fs.readFileSync(`./vibeusers.txt`))
+    process.vibe = JSON.parse(fs.readFileSync(`${process.GagbotSavedFileDirectory}/vibeusers.txt`))
 }
 catch (err) { 
     console.log(err);
 }
 try {
-    process.collar = JSON.parse(fs.readFileSync(`./collarusers.txt`))
+    process.collar = JSON.parse(fs.readFileSync(`${process.GagbotSavedFileDirectory}/collarusers.txt`))
 }
 catch (err) { 
     console.log(err);
 }
 try {
-    process.heavy = JSON.parse(fs.readFileSync(`./heavyusers.txt`))
+    process.heavy = JSON.parse(fs.readFileSync(`${process.GagbotSavedFileDirectory}/heavyusers.txt`))
 }
 catch (err) { 
     console.log(err);
