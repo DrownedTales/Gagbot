@@ -1,40 +1,19 @@
 const { WebhookClient, EmbedBuilder, AttachmentBuilder } = require('discord.js');
 const dotenv = require('dotenv')
+const fs = require('fs');
+const { getVibe, vibeText } = require("./functions/vibefunctions.js")
 
 dotenv.config()
 
-const messageSend = async (str, avatarURL, username) => {
-    // When called, we want to do something with str and then send it.
-    const webhookClient = new WebhookClient({ 
-        id: process.env.WEBHOOKID, 
-        token: process.env.WEBHOOKTOKEN 
-    })
-
-    webhookClient.send({
-        content: str,
-        username: username,
-        avatarURL: avatarURL
-    }).then(() => {
-        return true
-    })
+try {
+    process.vibe = JSON.parse(fs.readFileSync(`./vibeusers.txt`))
+}
+catch (err) { 
+    console.log(err);
 }
 
-const webhookClient = new WebhookClient({ 
-    id: process.env.WEBHOOKID, 
-    token: process.env.WEBHOOKTOKEN 
-})
+console.log(process.vibe)
+console.log(getVibe("603967231155634176"))
 
-let imageonsystem = "./SPOILER_image.png"
-
-let file = new AttachmentBuilder(imageonsystem, { name: imageonsystem } );
-
-const embed = new EmbedBuilder()
-  .setTitle('Image from URL')
-  .setImage(`attachment://${imageonsystem}`); // Replace with your image URL
-
-webhookClient.send({
-    content: "Test webhook with just an image",
-    files: [file]
-}).then(() => {
-    return true
-})
+console.log("Testing vibe code with this string!");
+console.log(vibeText("Testing vibe code with this string!", "603967231155634176"))

@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const { messageSend, messageSendImg, messageSendDev } = require(`./../functions/messagefunctions.js`)
+const { getVibe, vibeText } = require(`./../functions/vibefunctions.js`)
 
 const assignGag = (userID, gagtype = "ball", intensity = 5) => {
     if (process.gags == undefined) { process.gags = {} }
@@ -80,6 +81,23 @@ const splitMessage = (text) => {
 
 const garbleMessage = async (msg) => {
     try {
+        let outtext = '';
+        let messageparts = splitMessage(msg.content);
+        let modifiedmessage = false;
+        // Vibrators first
+        if (getVibe(msg.author.id)) {
+            modifiedmessage = true;
+            for (let i = 0; i < messageparts.length; i++) {
+                try {
+                    if (messageparts[i].garble) {
+                        messageparts[i].text = vibeText(messageparts[i].text, msg.author.id)
+                    }
+                }
+                catch (err) { console.log(err) }
+            }
+        }
+        console.log(messageparts)
+        // Gags now
         if (process.gags == undefined) { process.gags = {} }
         if (process.gags[`<@${msg.author.id}>`]) {
             // Grab all the command files from the commands directory
@@ -88,11 +106,10 @@ const garbleMessage = async (msg) => {
             const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 
             if (commandFiles.includes(process.gags[`<@${msg.author.id}>`].gagtype + ".js")) {
+                modifiedmessage = true;
                 let gaggarble = require(path.join(commandsPath, `${process.gags[`<@${msg.author.id}>`].gagtype}.js`))
-                let messageparts = splitMessage(msg.content);
                 let intensity = process.gags[`<@${msg.author.id}>`].intensity ? process.gags[`<@${msg.author.id}>`].intensity : 5
                 console.log(messageparts);
-                let outtext = '';
                 if (gaggarble.messagebegin) {
                     try {
                         outtext = `${gaggarble.messagebegin(msg.content, intensity)}`
@@ -116,45 +133,49 @@ const garbleMessage = async (msg) => {
                     }
                     catch (err) { console.log(err) }
                 }
-                if (msg.channel.id == process.env.CHANNELIDDEV) {
-                    let sentmessage = messageSendDev(outtext, msg.member.displayAvatarURL(), msg.member.displayName).then(() => {
-                        msg.delete();
+                
+            }
+        }
+        else {
+            let messagetexts = messageparts.map(m => m.text);
+            outtext = messagetexts.join(" ");
+        }
+        if (modifiedmessage) {
+            if (outtext.length == 0) { outtext = "Something went wrong. Ping <@125093095405518850> and let her know!"}
+            else if (outtext.length > 1999) {
+                outtext = outtext.slice(0, 1999); // Seriously, STOP POSTING LONG MESSAGES
+            }
+            if (msg.attachments?.first()) {
+                console.log(msg.attachments?.first())
+                let spoilertext = msg.attachments.first().url.search("SPOILER") ? "SPOILER_" : ""
+                let spoiler = msg.attachments.first().url.search("SPOILER") ? true : false
+                let nodedownload = new Promise((res,rej) => {
+                    let spoilertext = msg.attachments.first().url.search("SPOILER") ? "SPOILER_" : ""
+                    const file = fs.createWriteStream(`./${spoilertext}downloadedimage_${msg.id}.png`);
+                    https.get(msg.attachments.first().url, (response) => {
+                        response.pipe(file);
+                        file.on('finish', () => {
+                        file.close();
+                        console.log(`Downloaded to ${`./${spoilertext}downloadedimage_${msg.id}.png`}`);
+                        res(true);
+                        });
+                    }).on('error', (err) => {
+                        fs.unlink(dest); // Delete the file if an error occurs
+                        console.error(err.message);
+                        rej(false);
+                    });
+                }).then(() => {
+                    messageSendImg(outtext, msg.member.displayAvatarURL(), msg.member.displayName, msg.id, spoiler).then(() => {
+                        msg.delete().then(() => {
+                            fs.rmSync(`./${spoilertext}downloadedimage_${msg.id}.png`)
+                        });
                     })
-                }
-                else {
-                    if (msg.attachments?.first()) {
-                        console.log(msg.attachments?.first())
-                        let spoilertext = msg.attachments.first().url.search("SPOILER") ? "SPOILER_" : ""
-                        let spoiler = msg.attachments.first().url.search("SPOILER") ? true : false
-                        let nodedownload = new Promise((res,rej) => {
-                            let spoilertext = msg.attachments.first().url.search("SPOILER") ? "SPOILER_" : ""
-                            const file = fs.createWriteStream(`./${spoilertext}downloadedimage_${msg.id}.png`);
-                            https.get(msg.attachments.first().url, (response) => {
-                                response.pipe(file);
-                                file.on('finish', () => {
-                                file.close();
-                                console.log(`Downloaded to ${`./${spoilertext}downloadedimage_${msg.id}.png`}`);
-                                res(true);
-                                });
-                            }).on('error', (err) => {
-                                fs.unlink(dest); // Delete the file if an error occurs
-                                console.error(err.message);
-                                rej(false);
-                            });
-                        }).then(() => {
-                            messageSendImg(outtext, msg.member.displayAvatarURL(), msg.member.displayName, msg.id, spoiler).then(() => {
-                                msg.delete().then(() => {
-                                    fs.rmSync(`./${spoilertext}downloadedimage_${msg.id}.png`)
-                                });
-                            })
-                        })
-                    }
-                    else {
-                        let sentmessage = messageSend(outtext, msg.member.displayAvatarURL(), msg.member.displayName).then(() => {
-                            msg.delete();
-                        })
-                    }
-                }
+                })
+            }
+            else {
+                let sentmessage = messageSend(outtext, msg.member.displayAvatarURL(), msg.member.displayName).then(() => {
+                    msg.delete();
+                })
             }
         }
     }

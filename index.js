@@ -25,6 +25,12 @@ try {
 catch (err) { 
     console.log(err);
 }
+try {
+    process.vibe = JSON.parse(fs.readFileSync(`./vibeusers.txt`))
+}
+catch (err) { 
+    console.log(err);
+}
 
 // Grab all the command files from the commands directory
 const commands = [];

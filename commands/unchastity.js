@@ -13,9 +13,9 @@ module.exports = {
 		),
     async execute(interaction) {
 		let chastitywearer = interaction.options.getUser('wearer')
-        if (getChastity(chastitywearer.id)?.keyholder) {
-            // Target belt has a keyholder
-            if (getChastity(interaction.user.id)?.keyholder != interaction.user.id) {
+        if (getChastity(chastitywearer.id)) {
+            // Target is in a belt
+            if (getChastity(chastitywearer.id).keyholder != interaction.user.id) {
                 // User is NOT the keyholder for the target belt
                 if (interaction.user == chastitywearer) {
                     // Wearer is trying to unlock their own belt
@@ -23,7 +23,7 @@ module.exports = {
                 }
                 else {
                     // Trying to unlock someone else's belt 
-                    interaction.reply({ content: `You don't have the key for that belt!`, flags: MessageFlags.Ephemeral })
+                    interaction.reply({ content: `You don't have the key for ${chastitywearer} belt!`, flags: MessageFlags.Ephemeral })
                 }
             }
             else {
@@ -41,17 +41,8 @@ module.exports = {
             }
         }
         else {
-            // Target belt does NOT have a keyholder
-            if (interaction.user == chastitywearer) {
-                // Wearer removes the belt themselves
-                interaction.reply(`${interaction.user} undoes the clasp and the chastity belt falls off of their waist!`)
-                removeChastity(chastitywearer.id)
-            }
-            else {
-                // User removes someone else's belt
-                interaction.reply(`${interaction.user} undoes the clasp on ${chastitywearer}'s belt!`)
-                removeChastity(chastitywearer.id)
-            }
+            // Target is NOT wearing a belt
+            interaction.reply({ content: `${chastitywearer} isn't locked in a chastity belt!`, flags: MessageFlags.Ephemeral })
         }
     }
 }
