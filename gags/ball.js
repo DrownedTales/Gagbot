@@ -29,7 +29,7 @@ const garbleText = (text, intensity) => {
 
         // Get the new character using the array of character maps.
         // 10 intensities, only five maps.
-        let newChar = ballGagCharMaps[intensity / 2 - 1].get(char.toLowerCase());
+        let newChar = ballGagCharMaps[(Math.ceil(intensity / 2) - 1)].get(char.toLowerCase());
 
         // Edit the text if we are not escaped 
         if(newChar){ //(!escapedText && newChar){
@@ -84,11 +84,11 @@ let intensityTestMsg = "This unit is a good doll, and will wear all possible bal
 let intensityTestMsg2 = "The quick brown fox jumped over the lazy dog."
 
 console.log(`Original:     ${intensityTestMsg}\n`)
-console.log(`Intensity 1-2:   ${garbleText(intensityTestMsg, 2)}`)
-console.log(`Intensity 3-4:   ${garbleText(intensityTestMsg, 4)}`)
-console.log(`Intensity 5-6:   ${garbleText(intensityTestMsg, 6)}`)
-console.log(`Intensity 7-8:   ${garbleText(intensityTestMsg, 8)}`)
-console.log(`Intensity 9-10:  ${garbleText(intensityTestMsg, 10)}`)
+console.log(`Intensity 1-2:   ${garbleText(intensityTestMsg, 1)}`)
+console.log(`Intensity 3-4:   ${garbleText(intensityTestMsg, 3)}`)
+console.log(`Intensity 5-6:   ${garbleText(intensityTestMsg, 5)}`)
+console.log(`Intensity 7-8:   ${garbleText(intensityTestMsg, 7)}`)
+console.log(`Intensity 9-10:  ${garbleText(intensityTestMsg, 9)}`)
 
 console.log(`\nOriginal:     ${intensityTestMsg2}\n`)
 console.log(`Intensity 1-2:   ${garbleText(intensityTestMsg2, 2)}`)
