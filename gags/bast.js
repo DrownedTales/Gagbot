@@ -3,45 +3,21 @@ const garbleText = (text, intensity) => {
     let outtext = '';
     for (let i = 0; i < newtextparts.length; i++) {
         if (Math.random() > (0.50 - (0.05 * intensity))) {
-            /*if (newtextparts[i].length < 3) {
-                { outtext = `${outtext} ` }
-                for (let t = 0; t < newtextparts[i].length; t++) {
-                    if (newtextparts[i].charAt(t).search(/[A-z]|\d]/)) {
-                        let repletter;
-                        if (t == 0) repletter = "n"
-                        else if (t == 1) if (t == 0) repletter = "y"
-                        else repletter = "a"
-                        if ((newtextparts[i].charAt(t)).isUppercase()) {
-                            
-                        }
-                        if (t == 0) { outtext = `${outtext}N` }
-                        else if (t == 1) { outtext = `${outtext}y` }
-                        else { outtext = `${outtext}a` }
-                    }
-                    else {
-                        { outtext = `${outtext}${newtextparts[i].charAt(t)}` }
-                    }
-                }
-                let firstletter = (newtextparts[i].charAt(0)).isUppercase()
-                if (firstletter) { outtext = `${outtext} Nya` }
-                else { outtext = `${outtext} nya` }
-            }
-            else {*/
+
             outtext = `${outtext} `
-            for (let t = 0; t < newtextparts[i].length; t++) {
-                let repletter;
-                if (t == 0) { repletter = "n" }
-                else if (t == 1) { repletter = "y" }
-                else if ((t == (newtextparts[i].length-1)) && newtextparts[i].length > 3)  {repletter = "h" }
-                else { repletter = "a" }
-                if (!newtextparts[i].charAt(t).search(/[A-z]|\d]/)) {
-                    if (!newtextparts[i].charAt(t).search(/[A-Z]/)) { repletter = repletter.toUpperCase() }
-                    outtext = `${outtext}${repletter}`
-                }
-                else {
-                    outtext = `${outtext}${newtextparts[i].charAt(t)}`
-                }
+
+            var rng = Math.random();
+
+            if (rng > 0.75) {
+                outtext = replacer(outtext, newtextparts[i], "ny", "a", "h")
+            } else if (rng > 0.5) {
+                outtext = replacer(outtext, newtextparts[i], "me", "o", "w")
+            } else if (rng > 0.25) {
+                outtext = replacer(outtext, newtextparts[i], "pu", "r", "")
+            } else {
+                outtext = replacer(outtext, newtextparts[i], "g", "r", "")
             }
+
         }
         else {
             outtext = `${outtext} ${newtextparts[i]}`
@@ -49,6 +25,25 @@ const garbleText = (text, intensity) => {
     }
     return outtext
 }
+
+function replacer(text, ogText, startWord, repeatWord, endWord) {
+    for (let t = 0; t < ogText.length; t++) {
+        let repletter;
+        if (t < startWord.length) { repletter = startWord[t] }
+        else if ((t >= (ogText.length-endWord.length)) && ogText.length > startWord.length + endWord.length)  {repletter = endWord[t+endWord.length-ogText.length] }
+        else { repletter = repeatWord }
+        if (!ogText.charAt(t).search(/[A-z]|\d]/)) {
+            if (!ogText.charAt(t).search(/[A-Z]/)) { repletter = repletter.toUpperCase() }
+            console.log(repletter);
+            text = `${text}${repletter}`
+        }
+        else {
+            text = `${text}${ogText.charAt(t)}`
+        }
+    }
+    return text;
+}
+
 
 exports.garbleText = garbleText;
 exports.choicename = "Bast Gag"
