@@ -43,6 +43,12 @@ try {
 catch (err) { 
     console.log(err);
 }
+try {
+    process.pronouns = JSON.parse(fs.readFileSync(`./userpronouns.txt`))
+}
+catch (err) { 
+    console.log(err);
+}
 
 // Grab all the command files from the commands directory
 const commands = [];
