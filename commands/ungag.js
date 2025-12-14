@@ -7,11 +7,11 @@ module.exports = {
         .setDescription('Remove a gag from a user')
         .addUserOption(opt =>
             opt.setName('user')
-            .setDescription('The user to remove gag from')
-            .setRequired(true)
+            .setDescription('The user to remove gag from (leave blank for yourself)')
+            //.setRequired(true)
         ),
     async execute(interaction) {
-        let gaggeduser = interaction.options.getUser('user')
+        let gaggeduser = interaction.options.getUser('user') ? interaction.options.getUser('user') : interaction.user;
         if (getGag(gaggeduser)) {
             if (interaction.user == gaggeduser) {
                 if (!getMitten(interaction.user)) {
