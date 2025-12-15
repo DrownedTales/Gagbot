@@ -6,32 +6,32 @@ const https = require('https');
 // Pronoun types
 const pronounsMap = new Map([
     ["she/her",{
-        subject                 : "she",
-        object                  : "her",
-        possessive              : "hers",
-        possessiveDeterminer    : "her",
-        reflexive               : "herself",
+        "subject"                : "she",
+        "object"                  : "her",
+        "possessive"              : "hers",
+        "possessiveDeterminer"    : "her",
+        "reflexive"               : "herself",
     }],
     ["he/him",{
-        subject                 : "he",
-        object                  : "him",
-        possessive              : "his",
-        possessiveDeterminer    : "his",
-        reflexive               : "himself",
+        "subject"                 : "he",
+        "object"                  : "him",
+        "possessive"              : "his",
+        "possessiveDeterminer"    : "his",
+        "reflexive"               : "himself",
     }],
     ["they/them",{
-        subject                 : "they",
-        object                  : "them",
-        possessive              : "theirs",
-        possessiveDeterminer    : "their",
-        reflexive               : "themself",
+        "subject"                 : "they",
+        "object"                  : "them",
+        "possessive"              : "theirs",
+        "possessiveDeterminer"    : "their",
+        "reflexive"               : "themself",
     }],
     ["it/its",{
-        subject                 : "it",
-        object                  : "it",
-        possessive              : "its",
-        possessiveDeterminer    : "its",
-        reflexive               : "itself",
+        "subject"                 : "it",
+        "object"                  : "it",
+        "possessive"              : "its",
+        "possessiveDeterminer"    : "its",
+        "reflexive"               : "itself",
     }]
 ])
 
@@ -68,9 +68,14 @@ const pronounsMap = new Map([
 const getPronouns = (user, form) => {
     if (process.pronouns == undefined) { process.pronouns = {} }
     if(process.pronouns[user]){
-        return form ? process.pronouns[user].form : process.pronouns[user]
+        console.log("MEOW!\n\n\n\n\nMEOWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW\n")
+        console.log(user)
+        console.log(form)
+        console.log(process.pronouns[user])
+        console.log(process.pronouns[user][form])
+        return form ? process.pronouns[user][form] : process.pronouns[user]
     }
-    return form ? pronounsMap.get("they/them").form : pronounsMap.get("they/them")
+    return form ? pronounsMap.get("they/them")[form] : pronounsMap.get("they/them")
 }
 
 const setPronouns = (user, pronouns) => {
