@@ -62,6 +62,7 @@ const transferChastityKey = (user, to) => {
     if (!process.chastity[user]) { return false }
     if (process.chastity[user].keyholder == to) { return false }
     process.chastity[user].keyholder = to;
+    fs.writeFileSync(`${process.GagbotSavedFileDirectory}/chastityusers.txt`, JSON.stringify(process.chastity));
     return true
 }
 

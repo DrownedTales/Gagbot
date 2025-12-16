@@ -52,6 +52,7 @@ const transferCollarKey = (user, to) => {
     if (!process.collar[user]) { return false }
     if (process.collar[user].keyholder == to) { return false }
     process.collar[user].keyholder = to;
+    fs.writeFileSync(`${process.GagbotSavedFileDirectory}/collarusers.txt`, JSON.stringify(process.collar));
     return true
 }
 
