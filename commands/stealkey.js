@@ -41,6 +41,14 @@ module.exports = {
     const lockedUser = interaction.options.getUser("user");
     const restraint = getRestraintName(keyType, lockedUser.id);
 
+    if (lockedUser.id == interaction.user.id) {
+      interaction.reply({
+        content: "You cannot steal keys to your own restraints",
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
+
     if (!restraint) {
       interaction.reply({
         content: "Unknown restraint, blame <@458684324653301770>",
