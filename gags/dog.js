@@ -53,7 +53,3 @@ const garbleText = (text, intensity) => {
 
 exports.garbleText = garbleText;
 exports.choicename = "Enchanted Dog Gag"
-
-console.log(garbleText("I am a wonderful dog and I am speak like a human!", 1))
-console.log(garbleText("I am a wonderful dog and I am speak like a human!", 5))
-console.log(garbleText("I am a wonderful dog and I am speak like a human!", 10))

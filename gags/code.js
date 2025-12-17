@@ -76,7 +76,3 @@ const garbleText = (text, intensity) => {
 
 exports.garbleText = garbleText;
 exports.choicename = "Code Gag"
-
-console.log("Testing the phrase: 'I am saying some words like a cat meow! This is very fun!'")
-console.log("------")
-console.log(garbleText("I am saying some words like a cat meow! This is very fun!"));

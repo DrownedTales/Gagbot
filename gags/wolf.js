@@ -55,7 +55,3 @@ const garbleText = (text, intesity) => {
 
 exports.garbleText = garbleText;
 exports.choicename = "Enchanted Wolf Gag"
-
-console.log(garbleText("V is a good girl who needs all the pats~",1));
-console.log(garbleText("V is a good girl who needs all the pats~",5));
-console.log(garbleText("V is a good girl who needs all the pats~",10));

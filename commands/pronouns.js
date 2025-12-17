@@ -12,8 +12,6 @@ for(const x of pronounsMap.keys()){
 	})
 }
 
-console.log(...pronounTypes)
-
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('pronouns')
