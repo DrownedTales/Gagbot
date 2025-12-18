@@ -3,6 +3,10 @@ const { setUserVar, getUserVar } = require('../functions/usercontext.js')
 const { messageSendBot } = require('../functions/messagefunctions.js')
 const { getPronouns } = require('../functions/pronounfunctions.js')
 
+function onAssign (user, intensity) {
+    setUserVar(user, "n_of_messages", 0);
+}
+
 function onMessage (msg, intensity) {
     if (!getVibe(msg.author.id).some(vibe => vibe.vibetype == "rising vibe")) { return }
     if (getVibe(msg.author.id).find(vibe => vibe.vibetype == "rising vibe").intensity >= 30) { return }
@@ -24,6 +28,11 @@ function onMessage (msg, intensity) {
     }
 }
 
+function onRemove (user, intensity) {
+    setUserVar(user, "n_of_messages", 0);
+}
 
 exports.choicename = "Rising Vibe";
 exports.onMessage = onMessage;
+exports.onAssign = onAssign;
+exports.onRemove = onRemove;

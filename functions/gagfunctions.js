@@ -9,8 +9,7 @@ const { getCorset, corsetLimitWords } = require(`./../functions/corsetfunctions.
 const gagtypes = [];
 const commandsPath = path.join(__dirname, '..', 'gags');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-const commandsPath2 = path.join(__dirname, '..', 'vibes');
-const commandFiles2 = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+const commandsPathVibes = path.join(__dirname, '..', 'vibes');
 
 // Push the gag name over to the choice array. 
 for (const file of commandFiles) {
@@ -151,7 +150,7 @@ const garbleMessage = async (msg) => {
             modifiedmessage = true;
 
             for (const entry of process.vibe[msg.author.id]) {
-                const vibe = require(path.join(commandsPath2, `${entry.vibetype}.js`));
+                const vibe = require(path.join(commandsPathVibes, `${entry.vibetype}.js`));
                 if (vibe.onMessage) {
                     vibe.onMessage(msg, entry.intensity);
                 }

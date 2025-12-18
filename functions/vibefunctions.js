@@ -3,6 +3,8 @@ const path = require('path');
 const https = require('https');
 const { arousedtexts, arousedtextshigh } = require('../vibes/aroused/aroused_texts.js')
 
+const commandsPathVibes = path.join(__dirname, '..', 'vibes');
+
 const assignChastity = (user, keyholder) => {
     if (process.chastity == undefined) { process.chastity = {} }
     process.chastity[user] = {
@@ -40,6 +42,14 @@ const assignVibe = (user, intensity, vibetype = "bullet vibe") => {
             });
         }
     }
+
+    try {
+        const vibe = require(path.join(commandsPathVibes, `${vibetype}.js`));
+        if (vibe.onAssign) {
+            vibe.onAssign(user, intensity);
+        }
+    } catch (e) { console.log(e); }
+
     fs.writeFileSync(`${process.GagbotSavedFileDirectory}/vibeusers.txt`, JSON.stringify(process.vibe));
 }
 
@@ -57,7 +67,15 @@ const removeVibe = (user, vibetype) => {
         if (process.vibe[user].length == 0) {
             delete process.vibe[user]; // Discard the vibes object as we are no longer using it. 
         }
+        
+        try {
+            const vibe = require(path.join(commandsPathVibes, `${vibetype}.js`));
+            if (vibe.onRemove) {
+                vibe.onRemove(user, intensity);
+            }
+        } catch (e) { console.log(e); }
     }
+
     fs.writeFileSync(`${process.GagbotSavedFileDirectory}/vibeusers.txt`, JSON.stringify(process.vibe));
 }
 

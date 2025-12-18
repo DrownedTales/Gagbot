@@ -1,2 +1,2 @@
 
-exports.choicename = "Random Vibe";
+exports.choicename = "Edging Vibe";
