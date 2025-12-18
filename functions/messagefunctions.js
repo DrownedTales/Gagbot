@@ -16,6 +16,20 @@ const messageSend = async (str, avatarURL, username) => {
     })
 }
 
+const messageSendBot = async (str) => {
+    // When called, we want to do something with str and then send it.
+    const webhookClient = new WebhookClient({ 
+        id: process.env.WEBHOOKID, 
+        token: process.env.WEBHOOKTOKEN 
+    })
+
+    webhookClient.send({
+        content: str
+    }).then(() => {
+        return true
+    })
+}
+
 const messageSendImg = async (str, avatarURL, username, msgid, spoiler) => {
     // When called, we want to do something with str and then send it.
     const webhookClient = new WebhookClient({ 
@@ -58,3 +72,4 @@ const messageSendDev = async (str, avatarURL, username) => {
 exports.messageSend = messageSend;
 exports.messageSendImg = messageSendImg;
 exports.messageSendDev = messageSendDev;
+exports.messageSendBot = messageSendBot;

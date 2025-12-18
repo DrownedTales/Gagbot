@@ -1,0 +1,2 @@
+
+exports.choicename = "Word Buzzer";

@@ -5,7 +5,7 @@ const path = require('path');
 const https = require('https');
 const { garbleMessage } = require(`./functions/gagfunctions.js`)
 
-dotenv.config()
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 let GagbotSavedFileDirectory = process.env.GAGBOTFILEDIRECTORY ? process.env.GAGBOTFILEDIRECTORY : __dirname
 

@@ -122,7 +122,6 @@ module.exports = {
                 // Target is NOT in a chastity belt!
                 if (vibeuser == interaction.user) {
                     // User tries to modify their own vibe settings
-                    console.log("AAAAAAAAAAAAAAAAAAAAAA");
                     console.log(getVibe(vibeuser.id));
                     // console.log((getVibe(vibeuser.id).some((vibe) => (vibe.vibetype == vibetype))));
                     if (getVibe(vibeuser.id) && (getVibe(vibeuser.id).some((vibe) => (vibe.vibetype == vibetype)))) {
