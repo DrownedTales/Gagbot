@@ -48,6 +48,15 @@ const heavytypes = [
     { name: "Shrimp Tie", value: "rope_shrimp", denialCoefficient: 3 },
 ];
 
+
+/**************
+ * Discord API Requires an array of objects in form:
+ * { name: "Latex Armbinder", value: "armbinder_latex" }
+ ********************/
+const loadHeavyTypes = () => {
+    process.heavytypes = heavytypes.map((item) => {return {name: item.name, value: item.value}})
+}
+
 const convertheavy = (type) => {
     let convertheavyarr
     for (let i = 0; i < heavytypes.length; i++) {
@@ -81,6 +90,7 @@ const removeHeavy = (user) => {
     fs.writeFileSync(`${process.GagbotSavedFileDirectory}/heavyusers.txt`, JSON.stringify(process.heavy));
 }
 
+exports.loadHeavyTypes = loadHeavyTypes
 exports.assignHeavy = assignHeavy
 exports.getHeavy = getHeavy
 exports.removeHeavy = removeHeavy
