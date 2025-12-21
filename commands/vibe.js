@@ -88,7 +88,7 @@ module.exports = {
                                     discardChastityKey(vibeuser.id);
                                 }
                                 else {
-                                    interaction.reply(`${interaction.user} tries to unlock ${getPronouns(interaction.user.id, "possessiveDeterminer")} beltto add a ${vibetype} set to ${vibeintensity} but fumbles with the key so much with the key that they drop it somewhere and is stuck with what ${getPronouns(interaction.user.id, "subject")} have!`)
+                                    interaction.reply(`${interaction.user} tries to unlock ${getPronouns(interaction.user.id, "possessiveDeterminer")} belt to add a ${vibetype} set to ${vibeintensity} but fumbles with the key so much with the key that they drop it somewhere and is stuck with what ${getPronouns(interaction.user.id, "subject")} have!`)
                                 }
                             }
                             else {
@@ -99,7 +99,7 @@ module.exports = {
                                     discardChastityKey(vibeuser.id);
                                 }
                                 else {
-                                    interaction.reply(`${interaction.user} tries to unlock ${vibeuser}'s beltto add a ${vibetype} set to ${vibeintensity} but fumbles with the key so much with the key that they drop it somewhere so ${vibeuser} is stuck with what ${getPronouns(vibeuser.id, "subject")} have!`)
+                                    interaction.reply(`${interaction.user} tries to unlock ${vibeuser}'s belt to add a ${vibetype} set to ${vibeintensity} but fumbles with the key so much with the key that they drop it somewhere so ${vibeuser} is stuck with what ${getPronouns(vibeuser.id, "subject")} have!`)
                                 }
                             }
                         } else {
@@ -110,7 +110,7 @@ module.exports = {
                                     interaction.reply(`${interaction.user} tries to unlock ${getPronouns(interaction.user.id, "possessiveDeterminer")} belt to adjust ${getPronouns(interaction.user.id, "possessiveDeterminer")} ${vibetype} but fumbles with the key and is stuck with what ${getPronouns(interaction.user.id, "subject")} have!`)
                                 }
                                 else {
-                                    interaction.reply(`${interaction.user} tries to unlock ${getPronouns(interaction.user.id, "possessiveDeterminer")} beltto add a ${vibetype} set to ${vibeintensity} but fumbles with the key and is stuck with what ${getPronouns(interaction.user.id, "subject")} have!`)
+                                    interaction.reply(`${interaction.user} tries to unlock ${getPronouns(interaction.user.id, "possessiveDeterminer")} belt to add a ${vibetype} set to ${vibeintensity} but fumbles with the key and is stuck with what ${getPronouns(interaction.user.id, "subject")} have!`)
                                 }
                             }
                             else {
@@ -120,7 +120,7 @@ module.exports = {
                                     interaction.reply(`${interaction.user} tries to unlock ${vibeuser}'s belt to adjust the ${vibetype} but fumbles with the key so ${vibeuser} is stuck with what ${getPronouns(vibeuser.id, "subject")} have!`)
                                 }
                                 else {
-                                    interaction.reply(`${interaction.user} tries to unlock ${vibeuser}'s beltto add a ${vibetype} set to ${vibeintensity} but fumbles with the key so ${vibeuser} is stuck with what ${getPronouns(vibeuser.id, "subject")} have!`)
+                                    interaction.reply(`${interaction.user} tries to unlock ${vibeuser}'s belt to add a ${vibetype} set to ${vibeintensity} but fumbles with the key so ${vibeuser} is stuck with what ${getPronouns(vibeuser.id, "subject")} have!`)
                                 }
                             }
                         }
