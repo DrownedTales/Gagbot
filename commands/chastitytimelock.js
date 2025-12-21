@@ -60,7 +60,7 @@ module.exports = {
         return;
     }
 
-    if (keyholderAfter == 0 && rollKeyFumble(interaction.user.id) && (wearer == interaction.user.id || optins.getOthersKeyFumbling(wearer))) {
+    if (keyholderAfter == 0 && rollKeyFumble(interaction.user.id)) {
       interaction.reply({
         content: "you are too frustrated to use the unlock action",
         flags: MessageFlags.Ephemeral,

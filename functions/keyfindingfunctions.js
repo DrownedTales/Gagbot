@@ -14,62 +14,63 @@ const MAX_FUMBLE_TIMEOUT = 180000;
 const KEYFINDING_COOLDOWN = 60 * 1000;
 
 // return true if the user fumbles
-function rollKeyFumble(user) {
+function rollKeyFumble(keyholder, locked) {
   if (process.keyfumbling == undefined) {
     process.keyfumbling = {};
   }
   const now = Date.now();
-  if (process.keyfumbling[user]?.timeoutEnd > now) {
-    process.keyfumbling[user].timeoutEnd += MIN_FUMBLE_TIMEOUT + Math.floor(Math.random() * (MAX_FUMBLE_TIMEOUT - MIN_FUMBLE_TIMEOUT));
+  const fumbleChance = getFumbleChance(keyholder, locked);
+  if (!fumbleChance) return false;
+  if (process.keyfumbling[keyholder]?.timeoutEnd > now) {
+    process.keyfumbling[keyholder].timeoutEnd += MIN_FUMBLE_TIMEOUT + Math.floor(Math.random() * (MAX_FUMBLE_TIMEOUT - MIN_FUMBLE_TIMEOUT));
     fs.writeFileSync(`${process.GagbotSavedFileDirectory}/keyfumbling.txt`, JSON.stringify(process.keyfumbling));
     return true;
   } else {
-    process.keyfumbling[user] = {
+    process.keyfumbling[keyholder] = {
       timeoutEnd: now + MIN_FUMBLE_TIMEOUT + Math.floor(Math.random() * (MAX_FUMBLE_TIMEOUT - MIN_FUMBLE_TIMEOUT)),
     };
   }
-  const fumbleChance = getFumbleChance(user);
   if (Math.random() < fumbleChance) {
-    if (optins.getBlessedLuck(user)) {
-      if (process.keyfumbling[user]?.blessing) process.keyfumbling[user].blessing += 1 - fumbleChance;
-      else process.keyfumbling[user].blessing = 1 - fumbleChance;
+    if (optins.getBlessedLuck(keyholder)) {
+      if (process.keyfumbling[keyholder]?.blessing) process.keyfumbling[keyholder].blessing += 1 - fumbleChance;
+      else process.keyfumbling[keyholder].blessing = 1 - fumbleChance;
       fs.writeFileSync(`${process.GagbotSavedFileDirectory}/keyfumbling.txt`, JSON.stringify(process.keyfumbling));
     }
     return true;
   } else {
-    if (process.keyfumbling[user]?.blessing) process.keyfumbling[user].blessing = 0;
+    if (process.keyfumbling[keyholder]?.blessing) process.keyfumbling[keyholder].blessing = 0;
     fs.writeFileSync(`${process.GagbotSavedFileDirectory}/keyfumbling.txt`, JSON.stringify(process.keyfumbling));
     return false;
   }
 }
 
 // use this if the same action causes multiple rolls to not trigger timeout before being done
-function rollKeyFumbleN(user, n) {
+function rollKeyFumbleN(keyholder, locked, n) {
   if (process.keyfumbling == undefined) {
     process.keyfumbling = {};
   }
   const now = Date.now();
-  if (process.keyfumbling[user]?.timeoutEnd > now) {
-    process.keyfumbling[user].timeoutEnd += MIN_FUMBLE_TIMEOUT + Math.floor(Math.random() * (MAX_FUMBLE_TIMEOUT - MIN_FUMBLE_TIMEOUT));
+  const fumbleChance = getFumbleChance(keyholder, locked);
+  if (!fumbleChance) return Array(n).fill(false);
+  if (process.keyfumbling[keyholder]?.timeoutEnd > now) {
+    process.keyfumbling[keyholder].timeoutEnd += MIN_FUMBLE_TIMEOUT + Math.floor(Math.random() * (MAX_FUMBLE_TIMEOUT - MIN_FUMBLE_TIMEOUT));
     fs.writeFileSync(`${process.GagbotSavedFileDirectory}/keyfumbling.txt`, JSON.stringify(process.keyfumbling));
     return Array(n).fill(true);
   } else {
-    process.keyfumbling[user] = {
+    process.keyfumbling[keyholder] = {
       timeoutEnd: now + MIN_FUMBLE_TIMEOUT + Math.floor(Math.random() * (MAX_FUMBLE_TIMEOUT - MIN_FUMBLE_TIMEOUT)),
     };
   }
-  const fumbleChance = getFumbleChance(user);
-
   const results = [];
   for (let i = 0; i < n; i++) {
     if (Math.random() < fumbleChance) {
-      if (optins.getBlessedLuck(user)) {
-        if (process.keyfumbling[user]?.blessing) process.keyfumbling[user].blessing += 1 - fumbleChance;
-        else process.keyfumbling[user].blessing = 1 - fumbleChance;
+      if (optins.getBlessedLuck(keyholder)) {
+        if (process.keyfumbling[keyholder]?.blessing) process.keyfumbling[keyholder].blessing += 1 - fumbleChance;
+        else process.keyfumbling[keyholder].blessing = 1 - fumbleChance;
       }
       results[i] = true;
     } else {
-      if (process.keyfumbling[user]?.blessing) process.keyfumbling[user].blessing = 0;
+      if (process.keyfumbling[keyholder]?.blessing) process.keyfumbling[keyholder].blessing = 0;
       results[i] = false;
     }
   }
@@ -79,26 +80,28 @@ function rollKeyFumbleN(user, n) {
 }
 
 // return of 0 = never, 1+ = always
-function getFumbleChance(user) {
+function getFumbleChance(keyholder, locked) {
   if (process.keyfumbling == undefined) {
     process.keyfumbling = {};
   }
-  if (!optins.getKeyFumbling(user)) return 0;
-  let chance = getArousal(user) / 10;
-  const chastity = getChastity(user);
+  if (!optins.getKeyFumbling(keyholder)) return 0;
+  if (keyholder != locked && !optins.getFumbleOthersKeys(keyholder)) return 0;
+  if (keyholder != locked && !optins.getOthersKeyFumbling(locked)) return 0;
+  let chance = getArousal(keyholder) / 10;
+  const chastity = getChastity(keyholder);
   if (chastity) {
     const hoursBelted = Date.now() - chastity.timestamp / (60 * 60 * 1000);
     chance += calcFrustration(hoursBelted);
   }
 
-  // chance is increased if the user is wearing mittens
-  if (getMitten(user)) {
+  // chance is increased if the keyholder is wearing mittens
+  if (getMitten(keyholder)) {
     chance += 10;
     chance *= 1.1;
   }
 
-  if (chance < 100 && optins.getBlessedLuck(user)) {
-    chance -= process.keyfumbling[user]?.blessing ?? 0;
+  if (chance < 100 && optins.getBlessedLuck(keyholder)) {
+    chance -= process.keyfumbling[keyholder]?.blessing ?? 0;
   }
 
   // divine intervention

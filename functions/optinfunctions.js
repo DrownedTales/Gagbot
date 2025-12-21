@@ -4,9 +4,10 @@ const optins = new Map([
   ["KeyGiving", [0, "Key Giving", "Allows keyholders to give keys for your restraints to other keyholders"]],
   ["KeyFumbling", [-1, "Key Fumbling", "Makes it hard to handle keys when aroused or frustrated"]],
   ["OthersKeyFumbling", [2, "Others Key Fumbling", "Allows others to fumble with your keys"]],
-  ["BlessedLuck", [3, "Blessed Luck", "Makes it so failed rolls make future rolls more lucky"]],
-  ["KeyDiscarding", [4, "Key Discarding", "Allows keys for your restraints to be discarded or lost"]],
-  ["AnyFinders", [5, "Any Finders", "Allows discarded or lost keys for your restraints to be found by anyone"]],
+  ["FumbleOthersKeys", [3, "Fumble Others Keys", "Allows you to fumble with others keys"]],
+  ["BlessedLuck", [4, "Blessed Luck", "Makes it so failed rolls make future rolls more lucky"]],
+  ["KeyDiscarding", [5, "Key Discarding", "Allows keys for your restraints to be discarded or lost"]],
+  ["AnyFinders", [6, "Any Finders", "Allows discarded or lost keys for your restraints to be found by anyone"]],
 ]);
 
 function setOptin(user, offset) {
