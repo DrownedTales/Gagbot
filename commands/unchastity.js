@@ -47,7 +47,7 @@ module.exports = {
                 }
                 else {
                     // User fumbles with the key due to their arousal and frustration
-                    const fumbleResults = rollKeyFumbleN(interaction.user.id, 2);
+                    const fumbleResults = rollKeyFumbleN(interaction.user.id, chastitywearer.id, 2);
                     if (fumbleResults[0]) {
                         // if they fumble again they can lose the key
                         if (optins.getKeyDiscarding(chastitywearer.id) && fumbleResults[1]) {
