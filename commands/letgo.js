@@ -29,8 +29,8 @@ module.exports = {
           return;
         }
 
-        // cool off response, used to be low-arousal response, replace with something good
-        interaction.reply(`${interaction.user} tries to get over the edge but is denied by ${their(interaction.user.id)} own body!`);
+        // cool off response, replace with something good
+        interaction.reply(`[TMP] cool off`);
         clearArousal(interaction.user.id);
       }
     } catch (err) {
