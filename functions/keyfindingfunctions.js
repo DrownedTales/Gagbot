@@ -4,6 +4,7 @@ const { their } = require("./pronounfunctions");
 const { getMitten } = require("./gagfunctions");
 const { optins } = require("./optinfunctions");
 const fs = require("fs");
+const { getUserVar, setUserVar } = require("./usercontext");
 
 const MIN_FUMBLE_TIMEOUT = 60000;
 const MAX_FUMBLE_TIMEOUT = 180000;
@@ -103,28 +104,27 @@ function getFumbleChance(user) {
 }
 
 async function handleKeyFinding(message) {
+  const now = Date.now();
+  if (now - (getUserVar(message.author.id, "lastKeyFindTimestamp") ?? 0) < KEYFINDING_COOLDOWN) return;
+  setUserVar(message.author.id, "lastKeyFindTimestamp", now);
+
   const findSuccessChance = calcFindSuccessChance(message.author.id);
+  const findableKeys = [];
 
-  const findableChastityKeys = getFindableChastityKeys(message.author.id);
-  for ([lockedUser, chance] of findableChastityKeys) {
+  for ([lockedUser, chance] of getFindableChastityKeys(message.author.id)) findableKeys.push([lockedUser, chance, findChastityKey, "chastity belt"]);
+  for ([lockedUser, chance] of getFindableCollarKeys(message.author.id)) findableKeys.push([lockedUser, chance, findCollarKey, "collar"]);
+
+  shuffleArray(findableKeys);
+
+  for ([lockedUser, chance, findFunction, restraint] of findableKeys) {
     if (Math.random() < chance) {
       if (Math.random() < findSuccessChance) {
-        sendFindMessage(message, lockedUser, "chastity belt");
-        findChastityKey(lockedUser, message.author.id);
+        sendFindMessage(message, lockedUser, restraint);
+        findFunction(lockedUser, message.author.id);
+        return;
       } else {
-        sendFindFumbleMessage(message, lockedUser, "chastity belt");
-      }
-    }
-  }
-
-  const findableCollarKeys = getFindableCollarKeys(message.author.id);
-  for ([lockedUser, chance] of findableCollarKeys) {
-    if (Math.random() < chance) {
-      if (Math.random() < findSuccessChance) {
-        sendFindMessage(message, lockedUser, "collar");
-        findCollarKey(lockedUser, message.author.id);
-      } else {
-        sendFindFumbleMessage(message, lockedUser, "collar");
+        sendFindFumbleMessage(message, lockedUser, restraint);
+        return;
       }
     }
   }
@@ -144,6 +144,14 @@ function calcFindSuccessChance(user) {
   // currently just make it so mittens might make you fail
   if (getMitten(user)) return 0.5;
   else return 1;
+}
+
+// Durstenfeld shuffle
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
 }
 
 exports.getFumbleChance = getFumbleChance;
