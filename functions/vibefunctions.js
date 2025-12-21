@@ -317,6 +317,11 @@ function addArousal(user, change) {
   return next;
 }
 
+function clearArousal(user) {
+  if (process.arousal == undefined) process.arousal = {};
+  process.arousal[user] = { prev: 0, prev2: 0, timestamp: Date.now(), lastOrgasm: 0 };
+}
+
 function calcNextArousal(prev, prev2, growthCoefficient, decayCoefficient, timeStep) {
   const noDecay = prev + timeStep * growthCoefficient * Math.random();
   let next = noDecay - timeStep * decayCoefficient * (prev + prev2 / 2);
@@ -378,6 +383,7 @@ exports.getArousalDescription = getArousalDescription;
 exports.calcFrustration = calcFrustration;
 exports.getArousal = getArousal;
 exports.addArousal = addArousal;
+exports.clearArousal = clearArousal;
 exports.tryOrgasm = tryOrgasm;
 
 exports.assignChastity = assignChastity

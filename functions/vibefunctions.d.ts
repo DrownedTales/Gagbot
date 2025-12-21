@@ -54,6 +54,12 @@ export function getArousal(user: Snowflake): number;
 export function addArousal(user: Snowflake, change: number): number;
 
 /**
+ * Sets the user to 0 arousal and no recent orgasm
+ * @param user 
+ */
+export function clearArousal(user: Snowflake): void;
+
+/**
  * Returns true if the user successfully orgasms and updates stored last orgasm.
  * @param user
  */

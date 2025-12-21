@@ -29,7 +29,9 @@ module.exports = {
           return;
         }
 
+        // cool off response, used to be low-arousal response, replace with something good
         interaction.reply(`${interaction.user} tries to get over the edge but is denied by ${their(interaction.user.id)} own body!`);
+        clearArousal(interaction.user.id);
       }
     } catch (err) {
       console.log(err);
