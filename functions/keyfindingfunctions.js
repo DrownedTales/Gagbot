@@ -6,7 +6,9 @@ const { optins } = require("./optinfunctions");
 const fs = require("fs");
 const { getUserVar, setUserVar } = require("./usercontext");
 
+// the minimum time before attempts at using keys can succeed after they fumble
 const MIN_FUMBLE_TIMEOUT = 60000;
+// the maximum time before attempts at using keys can succeed after they fumble
 const MAX_FUMBLE_TIMEOUT = 180000;
 
 // return true if the user fumbles
