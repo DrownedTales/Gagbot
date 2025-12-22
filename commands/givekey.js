@@ -55,6 +55,26 @@ module.exports = {
       const lockedUser = interaction.options.getUser("user") ?? interaction.user;
       const restraint = getRestraintName(keyType, lockedUser.id);
 
+      let components = [
+				{
+					type: ComponentType.ActionRow,
+					components: [
+						{
+							type: ComponentType.Button,
+							label: "Cancel",
+							customId: `cancel`,
+							style: ButtonStyle.Danger,
+					  	},
+					  	{
+							type: ComponentType.Button,
+							label: "Proceed to transfer",
+							customId: `agreetotransferbutton`,
+							style: ButtonStyle.Success,
+					  	}
+					],
+				},
+			]
+
       if (!restraint) {
         interaction.reply({
           content: "Unknown restraint, blame <@458684324653301770>",
@@ -76,14 +96,17 @@ module.exports = {
 
       let getKeyholderFunction;
       let transferFunction;
+      let choiceemoji;
       switch (keyType) {
         case "chastity":
           getKeyholderFunction = getChastityKeyholder;
           transferFunction = transferChastityKey;
+          choiceemoji = "<:Chastity:1073495208861380629>"
           break;
         case "collar":
           getKeyholderFunction = getCollarKeyholder;
           transferFunction = transferCollarKey;
+          choiceemoji = "<:collar:1449984183261986939>";
           break;
         default:
           interaction.reply({
@@ -128,9 +151,39 @@ module.exports = {
         return;
       }
 
+      console.log("HIIIIIIIIIIIIIIIIIIIIIIIIIIIIII")
+
+      // Prompt and ensure the user intended to run this command for this combination. 
+      let response = await interaction.reply({ 
+				content: `Giving the keys for ${choiceemoji}${lockedUser} to 🔑${newKeyholder}. . .\n\nPlease confirm by pressing the button below:`, 
+				flags: MessageFlags.Ephemeral, 
+				components: components,
+				withResponse: true 
+			})
+      let confirmation;
+
+			const collectorFilter = (i) => i.user.id === interaction.user.id;
+			try {
+				confirmation = await response.resource.message.awaitMessageComponent({ filter: collectorFilter, time: 60_000 });
+
+				if (confirmation.customId === 'agreetotransferbutton') {
+					await confirmation.update({ content: `Key transfer request in progress...`, components: [] });
+				} else if (confirmation.customId === 'cancel') {
+					await confirmation.update({ content: 'Action cancelled', components: [] });
+          return; // Stop with the key transfer immediately. 
+				}
+			} 
+      catch (err) {
+				console.log(err);
+				await interaction.editReply({ content: 'Confirmation not received within 1 minute, cancelling transfer.', components: [] });
+        return;
+      }
+
+      // Keyholder is returning the keys to the wearer
       if (lockedUser.id == newKeyholder.id) {
+        console.log("Returning keys to wearer")
         if (transferFunction(lockedUser.id, newKeyholder.id)) {
-          interaction.reply(
+          await interaction.channel.send(
             `${
               interaction.user
             } gives the keys to ${lockedUser}'s ${restraint} to ${them(
@@ -138,36 +191,42 @@ module.exports = {
             )}`
           );
         } else {
-          interaction.reply({
+          await confirmation.update({
             content: "Failed to transfer key",
             flags: MessageFlags.Ephemeral,
           });
         }
+        // Wearer is giving their keys away
       } else if (lockedUser.id == interaction.user.id) {
+        console.log("Wearer giving keys away")
         if (transferFunction(lockedUser.id, newKeyholder.id)) {
-          interaction.reply(
+          await interaction.channel.send(
             `${interaction.user} gives the keys to ${their(
               interaction.user.id
             )} ${restraint} to ${newKeyholder}`
           );
         } else {
-          interaction.reply({
+          await confirmation.update({
             content: "Failed to transfer key",
             flags: MessageFlags.Ephemeral,
           });
         }
+        // I'm not sure what this does.
       } else if (optins.getKeyGiving(lockedUser)) {
+        console.log("Idk what this does")
         if (transferFunction(lockedUser.id, newKeyholder.id)) {
-          interaction.reply(
+          await interaction.channel.send(
             `${interaction.user} gives the keys to ${lockedUser}'s ${restraint} to ${newKeyholder}`
           );
         } else {
-          interaction.reply({
+          await confirmation.update({
             content: "Failed to transfer key",
             flags: MessageFlags.Ephemeral,
           });
         }
+        // General transfer of keys. This should be between two different people, not involving the wearer.
       } else {
+        console.log("You got here right? Right? ")
         if (lockedUser.dmChannel) {
           sendKeyTransferRequest(
             lockedUser.dmChannel,
@@ -187,13 +246,14 @@ module.exports = {
           );
         }
 
-        interaction.reply({
+        /*await confirmation.update({
           content: "Key transfer request was sent",
           flags: MessageFlags.Ephemeral,
-        });
+        });*/
       }
     }
     catch (err) {
+      console.log(err);
       console.log("I don't know why this crashes.")
     }
   },

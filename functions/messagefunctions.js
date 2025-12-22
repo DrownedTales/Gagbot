@@ -10,7 +10,10 @@ const messageSend = async (str, avatarURL, username) => {
     webhookClient.send({
         content: str,
         username: username,
-        avatarURL: avatarURL
+        avatarURL: avatarURL,
+        allowedMentions: {
+            "parse": []
+        }
     }).then(() => {
         return true
     })
@@ -47,7 +50,10 @@ const messageSendImg = async (str, avatarURL, username, msgid, spoiler) => {
         content: str,
         username: username,
         avatarURL: avatarURL,
-        files: [file]
+        files: [file],
+        allowedMentions: {
+            "parse": []
+        }
     }).then(() => {
         return true
     })

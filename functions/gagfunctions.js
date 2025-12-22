@@ -75,14 +75,17 @@ const splitMessage = (text) => {
     /*************************************************************************************
      * Massive Regex, let's break it down:
      * 
-     * 1.) Match Italicized Text, WITHOUT false-positives on bolded text.
-     * 2.) Match Website URLs - It's text copied from a random stack overflow post.
-     * 3.) Match HTTP(S) Headers - The URL matcher didn't catch these.
-     * 4.) Match Emoji - <:Emojiname:000000000000000000>
-     * 5.) Match Base Unicode Emoji - My stack is overflowing.
+     * 1.) Match User Tags. (@Dollminatrix)
+     * 2.) Match >////<
+     * 3.) Match Code Blocks
+     * 4.) Match ANSI Colors
+     * 5.) Match Italicized Text, WITHOUT false-positives on bolded text.
+     * 6.) Match Website URLs - Stack Overflow-sourced URL matcher plus Doll's HTTP(S) matching.
+     * 7.) Match Emoji - <:Emojiname:000000000000000000>
+     * 8.) Match Base Unicode Emoji - My stack is overflowing.
     **************************************************************************************/
-    //             |--------   Match italic text   -------| |----------------------  Match website URLs     ---------------------------------------------------| |--- Emojis ---| |--- Unicode Emoji -----------------------------------------------|
-    const regex = /(((?<!\*)\*{1})(\*{2})?([^\*]|\*{2})+\*)|(<?https?\:\/\/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)>?)|(<:[^:]+:[^>]+>)|(\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/g
+    //             |-  Tags -| |>///<| |Match code block | |ANSI Colors-| |--------   Match italic text   -------| |----------------------  Match website URLs     ---------------------------------------------------| |--- Emojis ---| |--- Unicode Emoji -----------------------------------------------|
+    const regex = /(<@[0-9]+>)|(>\/+<)|(```((ansi|js)\n)?)|(\u001b\[.+?m)|(((?<!\*)\*{1})(\*{2})?([^\*]|\*{2})+\*)|(<?https?\:\/\/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)>?)|(<:[^:]+:[^>]+>)|(\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/g
 
     let output = [];
     let deepCopy = text.split()[0]
@@ -249,7 +252,9 @@ const garbleMessage = async (msg) => {
         if (modifiedmessage) { //Fake reply with a ping
             if (msg.type == "19") {
                 const replied = await msg.fetchReference();
-                outtext = `${replied.author.toString()}\n${outtext}`
+                const replyauthorobject = await replied.guild.members.search({ query: replied.author.displayName, limit: 1 });
+                const first = replyauthorobject.first()
+                outtext = `<@${first.id}> ⟶ https://discord.com/channels/${replied.guildId}/${replied.channelId}/${replied.id}\n${outtext}`
             }
             if (outtext.length > 1999) {
                 outtext = outtext.slice(0, 1999); // Seriously, STOP POSTING LONG MESSAGES
@@ -274,7 +279,7 @@ const garbleMessage = async (msg) => {
                         rej(false);
                     });
                 }).then(() => {
-                    if (!(/\w|\d|\.|\\|\,|\;|\:|\'|\"|\<|\>|\?/).test(outtext)) {
+                    if ((!(/[^\u0000-\u0020]/).test(outtext)) && (outtext.length > 0)) {
                         msg.channel.send(msg.content)
                         outtext = "Mistress <@125093095405518850>, I broke the bot! The bot said what I was trying to say, for debugging purposes."
                     }
@@ -286,7 +291,7 @@ const garbleMessage = async (msg) => {
                 })
             }
             else {
-                if (!(/\w|\d|\.|\\|\,|\;|\:|\'|\"|\<|\>|\?/).test(outtext)) {
+                if (!(/[^\u0000-\u0020]/).test(outtext)) {
                     msg.channel.send(msg.content)
                     outtext = "Mistress <@125093095405518850>, I broke the bot! The bot said what I was trying to say, for debugging purposes."
                 }

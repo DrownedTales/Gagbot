@@ -90,6 +90,23 @@ const getChastityKeys = (user) => {
     return keysheld
 }
 
+// Returns UNIX timestring of the wearer's unlock time. 
+// second flag to true to return a Discord UNIX timestring instead. 
+const getChastityTimelock = (user, UNIXTimestring) => {
+    if (process.chastity == undefined) { process.chastity = {} }
+    if (!UNIXTimestring) {
+        return process.chastity[user]?.unlockTime
+    }
+    else {
+        if (process.chastity[user]?.unlockTime) {
+            return `<t:${Math.floor(process.chastity[user]?.unlockTime / 1000)}:f>`
+        }
+        else {
+            return null
+        }
+    }
+}
+
 const getChastityKeyholder = (user) => {
     if (process.chastity == undefined) { process.chastity = {} }
     return process.chastity[user]?.keyholder;
@@ -155,6 +172,7 @@ exports.assignVibe = assignVibe
 exports.getVibe = getVibe
 exports.removeVibe = removeVibe
 exports.stutterText = stutterText
+exports.getChastityTimelock = getChastityTimelock
 
 exports.getChastityKeys = getChastityKeys;
 exports.getChastityKeyholder = getChastityKeyholder;

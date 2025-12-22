@@ -3,7 +3,10 @@ const dotenv = require('dotenv')
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
-const { garbleMessage } = require(`./functions/gagfunctions.js`)
+const { garbleMessage } = require(`./functions/gagfunctions.js`);
+const { restartChastityTimers } = require('./functions/timelockfunctions.js');
+const { loadHeavyTypes } = require('./functions/heavyfunctions.js')
+const { assignMemeImages } = require('./functions/interactivefunctions.js')
 
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
@@ -114,10 +117,14 @@ try {
     console.log(err);
 }
 
+loadHeavyTypes();       // Load heavy types into memory for fast autocomplete access
+assignMemeImages();
+
 // Grab all the command files from the commands directory
 const commands = new Map();
 const modalHandlers = new Map();
 const componentHandlers = new Map();
+const autocompletehandlers = new Map();
 const commandsPath = path.join(__dirname, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
@@ -129,6 +136,7 @@ for (const file of commandFiles) {
     cmd.componentHandlers?.forEach((handler) => {
         componentHandlers.set(handler.key, handler);
     });
+    if (cmd.autoComplete) autocompletehandlers.set(file, cmd);
 }
 
 var gagged = {}
@@ -145,6 +153,7 @@ const client = new discord.Client({
 client.on("clientReady", async () => {
     // This is run once we’re logged in!
     console.log(`Logged in as ${client.user.tag}!`)
+    restartChastityTimers(client);
 })
 
 client.on("messageCreate", async (msg) => {
@@ -181,6 +190,16 @@ client.on('interactionCreate', async (interaction) => {
             componentHandlers.get(key)?.handle(interaction, ...args);
             return;
         } 
+
+        if (interaction.isAutocomplete()) {
+            try {
+                autocompletehandlers.get(`${interaction.commandName}.js`)?.autoComplete(interaction)
+            }
+            catch (err) {
+                console.log(err);
+            }
+            return;
+        }
       
         if ((interaction.channel.id != process.env.CHANNELID) && (interaction.channel.id != process.env.CHANNELIDDEV)) { 
             interaction.reply({ content: `Please use these commands over in <#${process.env.CHANNELID}>.`, flags: discord.MessageFlags.Ephemeral })

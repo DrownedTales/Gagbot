@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, MessageFlags } = require('discord.js');
-const { getHeavy, assignHeavy, commandsheavy, convertheavy } = require('./../functions/heavyfunctions.js')
+const { getHeavy, assignHeavy, commandsheavy, convertheavy, heavytypes } = require('./../functions/heavyfunctions.js')
 const { getCollar, getCollarPerm } = require('./../functions/collarfunctions.js')
 const { getChastity, assignChastity } = require('./../functions/vibefunctions.js')
 const { assignMitten, getMitten } = require('./../functions/gagfunctions.js')
@@ -30,8 +30,13 @@ module.exports = {
                 .addStringOption(opt =>
                     opt.setName('type')
                     .setDescription("Which Restraint?")
-                    .addChoices(...commandsheavy)
-                    .setRequired(true)
+                    //.addChoices(...commandsheavy)
+                    //.setRequired(true)
+                    .setAutocomplete(true)
+                )
+                .addBooleanOption(opt => 
+                    opt.setName('list_all_restraints')
+                    .setDescription("Set to true to list all restraints. Does not bind the collar wearer if TRUE.")
                 )
         )
         .addSubcommand((subcommand) => 
@@ -47,11 +52,43 @@ module.exports = {
                     .setDescription("Who should be the keyholder?")
                 )
         ),
+    async autoComplete(interaction) {
+		const focusedValue = interaction.options.getFocused(); 
+		if (focusedValue == "") { // User hasn't entered anything, lets give them a suggested set of 10
+			let heaviestoreturn = [
+				{ name: "Latex Armbinder", value: "armbinder_latex" },
+				{ name: "Shadow Latex Armbinder", value: "armbinder_shadowlatex" },
+				{ name: "Wolfbinder", value: "armbinder_wolf" },
+				{ name: "Ancient Armbinder", value: "armbinder_ancient" },
+				{ name: "High Security Armbinder", value: "armbinder_secure" },
+				{ name: "Latex Boxbinder", value: "boxbinder_latex" },
+				{ name: "Comfy Straitjacket", value: "straitjacket_comfy" },
+				{ name: "Maid Straitjacket", value: "straitjacket_maid" },
+				{ name: "Doll Straitjacket", value: "straitjacket_doll" },
+				{ name: "Shadow Latex Petsuit", value: "petsuit_shadowlatex" },
+			]
+			await interaction.respond(heaviestoreturn)
+		}
+		else {
+			let heavies = process.heavytypes.filter((f) => (f.name.toLowerCase()).includes(focusedValue.toLowerCase())).slice(0,10)
+			await interaction.respond(heavies)
+		}
+	},
     async execute(interaction) {
         try {
             // CHECK IF THEY CONSENTED! IF NOT, MAKE THEM CONSENT
             if (!getConsent(interaction.user.id)?.mainconsent) {
                 await handleConsent(interaction, interaction.user.id);
+                return;
+            }
+            // List all heavy restraints if this is set. 
+            if (interaction.options.getBoolean('list_all_restraints')) {
+                let restraints = heavytypes.map((h) => { return h.name }).sort()
+                let outtext = '## Full list of Heavy Restraints:\n\n';
+                for (let i = 0; i < restraints.length; i++) {
+                    outtext = `${outtext}${restraints[i]}\n`
+                }
+                await interaction.reply({ content: `${outtext}`, flags: MessageFlags.Ephemeral })
                 return;
             }
             let actiontotake = interaction.options.getSubcommand();

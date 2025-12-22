@@ -162,12 +162,14 @@ This restraint is intended to allow **others** to use /chastity, /mittens and /h
     return modal;
 }
 
-const timelockChastityModal = (interaction, keyholder) => {
-    const modal = new ModalBuilder().setCustomId(`chastitytimelock_${keyholder.id}`).setTitle('Collar Permissions');
+const timelockChastityModal = (interaction, wearer, tempKeyholder) => {
+    const modal = new ModalBuilder().setCustomId(`chastitytimelock_${wearer.id}${tempKeyholder ? `_${tempKeyholder.id}` : ""}`).setTitle('Chastity Timelock');
 
     let restrictionWarningText = new TextDisplayBuilder()
-    let warningText = `# Timelock (Chastity Belt)
-This will lock your belt away for a set period of time. Please configure your timelock below.
+    let warningText = interaction.user.id == wearer.id ? `# Timelock (Chastity Belt)
+This will lock your belt for a set period of time. Please configure your timelock below.
+-# Once confirmed, you will have a final prompt before the timelock starts` : `# Timelock (Chastity Belt)
+This will lock ${wearer}'s belt for a set period of time. Please configure your timelock below.
 -# Once confirmed, you will have a final prompt before the timelock starts`
 
     restrictionWarningText.setContent(warningText)
@@ -183,26 +185,28 @@ This will lock your belt away for a set period of time. Please configure your ti
         .setCustomId('accesswhilebound')
         .setPlaceholder('Belt Access')
         .setRequired(true)
+        .setMinValues(1)
+        .setMaxValues(1)
         .addOptions(
             new StringSelectMenuOptionBuilder()
                 // Label displayed to user
                 .setLabel('Everyone Else')
                 // Description of option
-                .setDescription('Everyone except you can vibe and corset you')
+                .setDescription('Everyone except the wearer can vibe and corset the wearer')
                 // Value returned to you in modal submission
                 .setValue('access_others'),
             new StringSelectMenuOptionBuilder()
                 // Label displayed to user
                 .setLabel('Keyholder Only')
                 // Description of option
-                .setDescription('Only the keyholder can access your belt')
+                .setDescription('Only the non-wearer keyholder access the wearer\' belt')
                 // Value returned to you in modal submission
                 .setValue('access_kh'),
             new StringSelectMenuOptionBuilder()
                 // Label displayed to user
                 .setLabel('Nobody')
                 // Description of option
-                .setDescription('Nobody, not even you, can access your belt')
+                .setDescription('Nobody, not even you, can access the wearer\' belt')
                 // Value returned to you in modal submission
                 .setValue('access_no'),
         )
@@ -211,6 +215,8 @@ This will lock your belt away for a set period of time. Please configure your ti
         .setCustomId('keyholderafter')
         .setPlaceholder('Action after lock')
         .setRequired(true)
+        .setMinValues(1)
+        .setMaxValues(1)
         .addOptions(
             new StringSelectMenuOptionBuilder()
                 // Label displayed to user
@@ -223,20 +229,21 @@ This will lock your belt away for a set period of time. Please configure your ti
                 // Label displayed to user
                 .setLabel('Return')
                 // Description of option
-                .setDescription('Returns the keys to you')
+                .setDescription('Returns the keys to the wearer')
                 // Value returned to you in modal submission
                 .setValue('keyholder_return'),
             new StringSelectMenuOptionBuilder()
                 // Label displayed to user
                 .setLabel('To Keyholder')
                 // Description of option
-                .setDescription('Returns keys to your keyholder')
+                .setDescription('Returns keys to the keyholder')
                 // Value returned to you in modal submission
                 .setValue('keyholder_keyholder'),
         )
 
     const labeltimelockamt = new LabelBuilder()
         .setLabel(`How long should the timelock be?`)
+        .setDescription("This can be a range like `1 hour - 24 hours`")
         .setTextInputComponent(timelockamt)
 
     const labelaccesswhilebound = new LabelBuilder()
@@ -254,8 +261,32 @@ This will lock your belt away for a set period of time. Please configure your ti
     return modal;
 }
 
+// Assigns images to the process variable memes. Called once during index.js startup. 
+// Is this needed? Heck no. But I want it. For the Absolute Cinema meme. 
+// The feature creep has really sunk in hasn't it.
+// This will get posted in the server because of my comments won't it?
+// Well. Hi everyone! 
+// I hope you're well. 
+// Enjoy your Absolute Cinemeow. 
+const assignMemeImages = () => {
+    // Grab all the image files from the images directory
+    const memeimages = [];
+    const imagespath = path.join(__dirname, '..', 'memes');
+    const imagefiles = fs.readdirSync(imagespath);
+    imagefiles.forEach((i) => {
+        if (i.endsWith(".png")) {
+            memeimages.push(
+                { name: i.slice(0, -4), value: i.slice(0, -4) }
+            );
+        }
+    })
+    process.memes = memeimages
+}
+
 exports.consentMessage = consentMessage
 exports.getConsent = getConsent
 exports.handleConsent = handleConsent
 exports.collarPermModal = collarPermModal
 exports.timelockChastityModal = timelockChastityModal
+
+exports.assignMemeImages = assignMemeImages

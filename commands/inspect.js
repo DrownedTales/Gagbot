@@ -1,8 +1,9 @@
 const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 const { getMitten, getGag, convertGagText, getGagIntensity } = require('./../functions/gagfunctions.js')
-const { getChastity, getVibe, getChastityKeys } = require('./../functions/vibefunctions.js')
+const { getChastity, getVibe, getChastityKeys, getChastityTimelock } = require('./../functions/vibefunctions.js')
 const { getCollar, getCollarPerm, getCollarKeys } = require('./../functions/collarfunctions.js')
 const { getHeavy } = require('./../functions/heavyfunctions.js')
+const { getCorset } = require('./../functions/corsetfunctions.js')
 const { getPronouns, getPronounsSet } = require('./../functions/pronounfunctions.js')
 
 module.exports = {
@@ -32,10 +33,10 @@ module.exports = {
             }
             // Mitten status
             if (getMitten(inspectuser)) {
-                outtext = `${outtext}<:Hand:1098086504598884402> Mittens: **WORN**\n`
+                outtext = `${outtext}<:mittens:1452425463757803783> Mittens: **WORN**\n`
             }
             else {
-                outtext = `${outtext}<:Hand:1098086504598884402> Mittens: Not currently worn.\n`
+                outtext = `${outtext}<:mittens:1452425463757803783> Mittens: Not currently worn.\n`
             }
             // Vibe status
             if (getVibe(inspectuser.id)) {
@@ -46,16 +47,40 @@ module.exports = {
             }
             // Chastity status
             if (getChastity(inspectuser.id)) {
-                if (getChastity(inspectuser.id).keyholder == inspectuser.id) {
+                let isLocked = (getChastity(inspectuser.id)?.keyholder == interaction.user.id || (getChastity(inspectuser.id)?.access === 0 && inspectuser.id != interaction.user.id))
+                let lockemoji = isLocked ? "🔑" : "🔒"
+                let chastitykeyaccess = getChastity(inspectuser.id)?.access
+                let timelockedtext = "Timelocked (Open)"
+                if (chastitykeyaccess == 1) { timelockedtext = "Timelocked (Keyed)" }
+                if (chastitykeyaccess == 2) { timelockedtext = "Timelocked (Sealed)" }
+                if (getChastityTimelock(inspectuser.id)) {
+                    outtext = `${outtext}<:Chastity:1073495208861380629> Chastity: ${lockemoji} **${timelockedtext} until ${getChastityTimelock(inspectuser.id, true)}**\n`
+                }
+                else if (getChastity(inspectuser.id).keyholder == inspectuser.id) {
                     // Self bound!
-                    outtext = `${outtext}<:Chastity:1073495208861380629> Chastity: **Self-bound!**\n`
+                    outtext = `${outtext}<:Chastity:1073495208861380629> Chastity: ${lockemoji} **Self-bound!**\n`
                 }
                 else {
-                    outtext = `${outtext}<:Chastity:1073495208861380629> Chastity: **Key held by <@${getChastity(inspectuser.id).keyholder}>**\n`
+                    outtext = `${outtext}<:Chastity:1073495208861380629> Chastity: ${lockemoji} **Key held by <@${getChastity(inspectuser.id).keyholder}>**\n`
                 }
             }
             else {
                 outtext = `${outtext}<:Chastity:1073495208861380629> Chastity: Not currently worn.\n`
+            }
+            // Corset status
+            if (getCorset(inspectuser.id)) {
+                if (getCorset(inspectuser.id).tightness > 7) {
+                    outtext = `${outtext}<:corset:1451126998192881684> Corset: **Laced tightly to a string length of ${getCorset(inspectuser.id).tightness}**\n`
+                }
+                else if (getCorset(inspectuser.id).tightness > 4) {
+                    outtext = `${outtext}<:corset:1451126998192881684> Corset: **Laced moderately to a string length of ${getCorset(inspectuser.id).tightness}**\n`
+                }
+                else {
+                    outtext = `${outtext}<:corset:1451126998192881684> Corset: **Laced loosely to a string length of ${getCorset(inspectuser.id).tightness}**\n`
+                }
+            }
+            else {
+                outtext = `${outtext}<:corset:1451126998192881684> Corset: Not currently worn.\n`
             }
             // Heavy Bondage status
             if (getHeavy(inspectuser.id)) {
@@ -68,7 +93,12 @@ module.exports = {
             if (getCollar(inspectuser.id)) {
                 if (!getCollar(inspectuser.id).keyholder_only) {
                     // Free use!
-                    outtext = `${outtext}<:collar:1449984183261986939> Collar: **Unlocked and free use!**\n`
+                    if (getCollar(inspectuser.id).keyholder == inspectuser.id) {
+                        outtext = `${outtext}<:collar:1449984183261986939> Collar: **Self-bound and free use!**\n`
+                    }
+                    else {
+                        outtext = `${outtext}<:collar:1449984183261986939> Collar: **Key held by <@${getCollar(inspectuser.id).keyholder}>, free use!**\n`
+                    }
                 }
                 else if (getCollar(inspectuser.id).keyholder == inspectuser.id) {
                     // Self bound!
