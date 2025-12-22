@@ -254,7 +254,7 @@ module.exports = {
     }
     catch (err) {
       console.log(err);
-      console.log("I don't know why this crashes.")
+      console.log("I don't know why this crashes.") // I know the feeling *pat pat*
     }
   },
   componentHandlers: [

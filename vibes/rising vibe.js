@@ -3,7 +3,7 @@ const { setUserVar, getUserVar } = require('../functions/usercontext.js')
 const { messageSendBot } = require('../functions/messagefunctions.js')
 const { getPronouns } = require('../functions/pronounfunctions.js')
 
-function onAssign (user, intensity) {
+function onAssign (user, intensity, interaction = null) {
     setUserVar(user, "n_of_messages", 0);
 }
 
@@ -28,7 +28,7 @@ function onMessage (msg, intensity, messageparts=null) {
     }
 }
 
-function onRemove (user, intensity) {
+function onRemove (user, intensity, interaction = null) {
     setUserVar(user, "n_of_messages", 0);
 }
 

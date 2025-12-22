@@ -157,6 +157,10 @@ function stutterText(text, intensity=5) {
         }
     }
 
+    if (intensity == 0) {
+        return text;
+    }
+
     let newtextparts = text.split(" ");
     let outtext = ''
     for (let i = 0; i < newtextparts.length; i++) {

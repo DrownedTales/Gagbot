@@ -3,8 +3,6 @@ const { arousedtexts, arousedtextshigh } = require('./aroused/aroused_texts.js')
 
 function customStutter(text, intensity) {
 
-    console.log('intensity', intensity)
-
     var wordlist = text.split(" ");
 
     let arousedlist = arousedtexts;
@@ -16,7 +14,6 @@ function customStutter(text, intensity) {
             arousedlist = arousedlist.map(word => word.toUpperCase()); // All caps if too much intensity
         }
     }
-    console.log(arousedlist);
 
     let randomnumbers = [];
     let sum = 0;

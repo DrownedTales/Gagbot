@@ -5,7 +5,7 @@ const { getChastityKeyholder } = require("../functions/vibefunctions.js");
 
 module.exports = {
   async modalexecute(interaction) {
-    console.log(interaction);
+    // console.log(interaction);
 
     let keyholder = interaction.user.id;
     const split = interaction.customId.split("_");

@@ -160,7 +160,8 @@ const garbleMessage = async (msg) => {
             }
 
             totalwords = 0 // recalculate eligible word count because they're stimmed out of their mind. 
-            let vibeintensity = process.vibe[msg.author.id].reduce((a, b) => a + b.intensity, 0) || 5
+            let vibeintensity = process.vibe[msg.author.id].reduce((a, b) => a + b.intensity, 0)
+            vibeintensity = vibeintensity == undefined ? 5 : vibeintensity
             for (let i = 0; i < messageparts.length; i++) {
                 try {
                     if (messageparts[i].garble) {

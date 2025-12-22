@@ -62,7 +62,7 @@ const garbleText = (text, intensity) => {
             wrestended = true;
         }
     }
-    console.log(newtextparts)
+    // console.log(newtextparts)
     while ((newtextparts.length <= wnum)) {
         newtextparts.push(fillerwords[Math.floor(Math.random() * fillerwords.length)])
     }

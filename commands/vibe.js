@@ -33,13 +33,13 @@ module.exports = {
 		.addNumberOption(opt => 
             opt.setName('intensity')
             .setDescription("How intensely to stimulate")
-            .setMinValue(1)
+            .setMinValue(0)
             .setMaxValue(30)
         ),
     async execute(interaction) {
         try {
             let vibeuser = interaction.options.getUser('user') ? interaction.options.getUser('user') : interaction.user
-            let vibeintensity = interaction.options.getNumber('intensity') ? interaction.options.getNumber('intensity') : 5
+            let vibeintensity = interaction.options.getNumber('intensity') != undefined ? interaction.options.getNumber('intensity') : 5
             let vibetype = interaction.options.getString('type') ? interaction.options.getString('type') : "bullet vibe"
             // CHECK IF THEY CONSENTED! IF NOT, MAKE THEM CONSENT
             if (!getConsent(vibeuser.id)?.mainconsent) {
@@ -51,6 +51,7 @@ module.exports = {
                 await handleConsent(interaction, interaction.user.id);
                 return;
             }
+
             if (getHeavy(interaction.user.id)) {
                 if (vibeuser == interaction.user) {
                     if (getChastity(vibeuser.id)) {
@@ -71,32 +72,44 @@ module.exports = {
             }
             else if (getChastity(vibeuser.id)) {
                 // The target is in a chastity belt
-                if ((getChastity(vibeuser.id)?.keyholder == interaction.user.id || (getChastity(vibeuser.id)?.access === 0 && vibeuser.id != interaction.user.id))) {
+                if (vibetype == "remote vibe" && getVibe(vibeuser.id) && (getVibe(vibeuser.id).some((vibe) => (vibe.vibetype == vibetype)))) {
+                    //Exception for remote vibe to bypass chastity
+                    if (vibeuser == interaction.user) {
+                        // User modifies their own vibe settings while in chastity
+                        auxAssign(`${interaction.user} uses ${getPronouns(interaction.user.id, "possessiveDeterminer")} remote control to change ${getPronouns(interaction.user.id, "possessiveDeterminer")} ${vibetype} intensity to ${vibeintensity}!`,
+                            interaction, vibeuser, vibeintensity, vibetype);
+                    } else {
+                        // User modifies another user's vibe settings
+                        auxAssign(`${interaction.user} uses ${getPronouns(interaction.user.id, "possessiveDeterminer")} remote control to change ${vibeuser}'s ${vibetype} intensity to ${vibeintensity}!`, 
+                            interaction, vibeuser, vibeintensity, vibetype);
+                    }
+                }
+                else if ((getChastity(vibeuser.id)?.keyholder == interaction.user.id || (getChastity(vibeuser.id)?.access === 0 && vibeuser.id != interaction.user.id))) {
                     // User tries to modify the vibe settings for someone in chastity that they do have the key for
                     if (vibeuser == interaction.user) {
                         // User tries to modify their own vibe settings while in chastity
                         if (getVibe(vibeuser.id) && (getVibe(vibeuser.id).some((vibe) => (vibe.vibetype == vibetype)))) {
                             // User already has the same vibrator on
-                            interaction.reply(`${interaction.user} unlocks ${getPronouns(interaction.user.id, "possessiveDeterminer")} belt, changing the ${vibetype} setting to ${vibeintensity} and then locks it back up!`)
-                            assignVibe(vibeuser.id, vibeintensity, vibetype)
+                            auxAssign(`${interaction.user} unlocks ${getPronouns(interaction.user.id, "possessiveDeterminer")} belt, changing the ${vibetype} setting to ${vibeintensity} and then locks it back up!`,
+                                interaction, vibeuser, vibeintensity, vibetype);
                         }
                         else {
                             // User adds a vibe
-                            interaction.reply(`${interaction.user} unlocks ${getPronouns(interaction.user.id, "possessiveDeterminer")} belt, adding a ${vibetype} set to ${vibeintensity} and then locks it back up!`)
-                            assignVibe(vibeuser.id, vibeintensity, vibetype)
+                            auxAssign(`${interaction.user} unlocks ${getPronouns(interaction.user.id, "possessiveDeterminer")} belt, adding a ${vibetype} set to ${vibeintensity} and then locks it back up!`,
+                                interaction, vibeuser, vibeintensity, vibetype);
                         }
                     }
                     else {
                         // User tries to modify another user's vibe settings
                         if (getVibe(vibeuser.id) && (getVibe(vibeuser.id).some((vibe) => (vibe.vibetype == vibetype)))) {
                             // User already has a vibrator of same type on
-                            interaction.reply(`${interaction.user} unlocks ${vibeuser}'s belt, changing the ${vibetype} setting to ${vibeintensity} and then locks it back up!`)
-                            assignVibe(vibeuser.id, vibeintensity, vibetype)
+                            auxAssign(`${interaction.user} unlocks ${vibeuser}'s belt, changing the ${vibetype} setting to ${vibeintensity} and then locks it back up!`,
+                                interaction, vibeuser, vibeintensity, vibetype);
                         }
                         else {
                             // User adds a vibe
-                            interaction.reply(`${interaction.user} unlocks ${vibeuser}'s belt, adding a ${vibetype} set to ${vibeintensity} and then locks it back up!`)
-                            assignVibe(vibeuser.id, vibeintensity, vibetype)
+                            auxAssign(`${interaction.user} unlocks ${vibeuser}'s belt, adding a ${vibetype} set to ${vibeintensity} and then locks it back up!`, 
+                                interaction, vibeuser, vibeintensity, vibetype);
                         }
                     }
                 }
@@ -122,30 +135,28 @@ module.exports = {
                 // Target is NOT in a chastity belt!
                 if (vibeuser == interaction.user) {
                     // User tries to modify their own vibe settings
-                    console.log(getVibe(vibeuser.id));
-                    // console.log((getVibe(vibeuser.id).some((vibe) => (vibe.vibetype == vibetype))));
                     if (getVibe(vibeuser.id) && (getVibe(vibeuser.id).some((vibe) => (vibe.vibetype == vibetype)))) {
                         // User already has a vibrator of the same type on
-                        interaction.reply(`${interaction.user} changes ${getPronouns(interaction.user.id, "possessiveDeterminer")} ${vibetype} setting to ${vibeintensity}!`)
-                        assignVibe(vibeuser.id, vibeintensity, vibetype)
+                        auxAssign(`${interaction.user} changes ${getPronouns(interaction.user.id, "possessiveDeterminer")} ${vibetype} setting to ${vibeintensity}!`,
+                            interaction, vibeuser, vibeintensity, vibetype);
                     }
                     else {
                         // User adds a vibe
-                        interaction.reply(`${interaction.user} slips on a ${vibetype} set to ${vibeintensity}!`)
-                        assignVibe(vibeuser.id, vibeintensity, vibetype)
+                        auxAssign(`${interaction.user} slips on a ${vibetype} set to ${vibeintensity}!`, 
+                            interaction, vibeuser, vibeintensity, vibetype);
                     }
                 }
                 else {
                     // User tries to modify another user's vibe settings
                     if (getVibe(vibeuser.id) && (getVibe(vibeuser.id).some((vibe) => (vibe.vibetype == vibetype)))) {
                         // User already has a vibrator of same type on
-                        interaction.reply(`${interaction.user} changes ${vibeuser}'s ${vibetype} setting to ${vibeintensity}!`)
-                        assignVibe(vibeuser.id, vibeintensity, vibetype)
+                        auxAssign(`${interaction.user} changes ${vibeuser}'s ${vibetype} setting to ${vibeintensity}!`, 
+                            interaction, vibeuser, vibeintensity, vibetype);
                     }
                     else {
                         // User adds a vibe
-                        interaction.reply(`${interaction.user} slips a ${vibetype} on ${vibeuser} set to ${vibeintensity}!`)
-                        assignVibe(vibeuser.id, vibeintensity, vibetype)
+                        auxAssign(`${interaction.user} slips a ${vibetype} on ${vibeuser} set to ${vibeintensity}!`, 
+                            interaction, vibeuser, vibeintensity, vibetype);
                     }
                 }
             }
@@ -153,5 +164,24 @@ module.exports = {
         catch (err) {
             console.log(err)
         }
+    }
+}
+
+// Ask for extra parameters in case there's stuff we want to ask and execute before the regular assignVibe
+//  (couldn't think of a cleaner solution while keeping the same command)
+async function auxAssign(defaultText, interaction, vibeuser, vibeintensity, vibetype) {
+    let onConfirm = null;
+    try {
+        const vibe = require(path.join(commandsPath, `${vibetype}.js`));
+        if (vibe.extraParameters) {
+            onConfirm = await vibe.extraParameters(interaction, vibeuser, vibeintensity, vibetype);
+        }
+    } catch (err) { console.log(err) }
+
+    if (onConfirm) {
+        await onConfirm(defaultText);
+    } else {
+        interaction.reply(defaultText);
+        assignVibe(vibeuser.id, vibeintensity, vibetype);
     }
 }

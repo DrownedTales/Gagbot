@@ -1,4 +1,2 @@
 
-
-
 exports.choicename = "Timed Vibe";

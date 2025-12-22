@@ -8,7 +8,7 @@ function getRandomCount(intensity) {
     return Math.floor(Math.random() * 4) + Math.ceil(Math.random() * 4 * (intensity / 30));
 }
 
-function onAssign (user, intensity) {
+function onAssign (user, intensity, interaction = null) {
     setUserVar(user, "random_vibe_count", getRandomCount(intensity));
 }
 
@@ -40,7 +40,7 @@ function onMessage (msg, intensity, messageparts=null) {
     }
 }
 
-function onRemove (user, intensity) {
+function onRemove (user, intensity, interaction = null) {
     setUserVar(user, "random_vibe_count", 0);
 }
 
