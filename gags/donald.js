@@ -19,6 +19,9 @@ const garbleText = (text) => {
 
         return Array.from(chunk.match(syllableRegex))
         .map((syllable) => {
+            if (syllable.length < 2) {
+                return syllable;
+            }
             return DONALDSOUNDS[Math.floor(Math.random() * DONALDSOUNDS.length)]
         }).join("");
     });

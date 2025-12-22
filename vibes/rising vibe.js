@@ -7,7 +7,7 @@ function onAssign (user, intensity) {
     setUserVar(user, "n_of_messages", 0);
 }
 
-function onMessage (msg, intensity) {
+function onMessage (msg, intensity, messageparts=null) {
     if (!getVibe(msg.author.id).some(vibe => vibe.vibetype == "rising vibe")) { return }
     if (getVibe(msg.author.id).find(vibe => vibe.vibetype == "rising vibe").intensity >= 30) { return }
 

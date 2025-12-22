@@ -12,7 +12,7 @@ function onAssign (user, intensity) {
     setUserVar(user, "random_vibe_count", getRandomCount(intensity));
 }
 
-function onMessage (msg, intensity) {
+function onMessage (msg, intensity, messageparts=null) {
     if (!getVibe(msg.author.id).some(vibe => vibe.vibetype == "random vibe")) { return }
     if (getUserVar(msg.author.id, "random_vibe_count") == undefined) { setUserVar(msg.author.id, "random_vibe_count", getRandomCount(intensity)); }
 

@@ -1,4 +1,5 @@
 
+// Apply function over chunks of words, ignoring non letters
 const processChunks = (text, func) => {
     const words = text.split(" ");
 
@@ -33,6 +34,7 @@ const processChunks = (text, func) => {
     }).join(" ");
 }
 
+// Apply function to each word of text
 const processWords = (text, func) => {
     const words = text.split(" ");
     return words.map((word) => {

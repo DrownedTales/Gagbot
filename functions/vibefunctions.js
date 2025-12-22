@@ -126,7 +126,7 @@ function stutterText(text, intensity=5) {
             }
             if (Math.random() > (1.0 - (0.05 * intensity))) { // 0.5-5% to insert an arousal text
                 let arousedlist = arousedtexts;
-                if (intensity > 7) {
+                if (intensity > 15) {
                     for (let i = 0; i < arousedtextshigh; i++) { // Remove the first 5 elements to give the high arousal texts higher chance to show up
                         arousedlist[i] = arousedtextshigh[i]
                     }

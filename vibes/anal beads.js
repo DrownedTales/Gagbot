@@ -1,0 +1,2 @@
+
+exports.choicename = "Anal Beads";

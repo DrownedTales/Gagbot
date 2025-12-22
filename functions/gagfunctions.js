@@ -152,7 +152,7 @@ const garbleMessage = async (msg) => {
             for (const entry of process.vibe[msg.author.id]) {
                 const vibe = require(path.join(commandsPathVibes, `${entry.vibetype}.js`));
                 if (vibe.onMessage) {
-                    vibe.onMessage(msg, entry.intensity);
+                    vibe.onMessage(msg, entry.intensity, messageparts);
                 }
             }
 
@@ -161,7 +161,22 @@ const garbleMessage = async (msg) => {
             for (let i = 0; i < messageparts.length; i++) {
                 try {
                     if (messageparts[i].garble) {
-                        messageparts[i].text = stutterText(messageparts[i].text, vibeintensity)
+
+                        const vibes = [];
+                        for (const entry of process.vibe[msg.author.id]) {
+                            vibes.push(require(path.join(commandsPathVibes, `${entry.vibetype}.js`)));
+                        }
+
+                        const vibesToStutter = vibes.filter(vibe => vibe.stutterPriority ? true : false)
+                        
+                        if (vibesToStutter.length > 0) {
+                            const vibe = vibesToStutter.reduce((a, b) => a.stutterPriority > b.stutterPriority ? a : b)
+                            messageparts[i].text = vibe.customStutter(messageparts[i].text, vibeintensity)
+                            
+                        } else {
+                            messageparts[i].text = stutterText(messageparts[i].text, vibeintensity)
+                        }
+
                         totalwords = totalwords + messageparts[i].text.split(" ").length
                     }
                 }

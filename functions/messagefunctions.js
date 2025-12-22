@@ -20,7 +20,7 @@ const messageSendBot = async (str) => {
     // When called, we want to do something with str and then send it.
     const webhookClient = new WebhookClient({ 
         id: process.env.WEBHOOKID, 
-        token: process.env.WEBHOOKTOKEN 
+        token: process.env.WEBHOOKTOKEN
     })
 
     webhookClient.send({
