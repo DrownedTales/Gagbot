@@ -1,6 +1,6 @@
 import { Snowflake } from "discord.js";
 
-export type Chastity = { keyholder?: Snowflake | "discarded"; timestamp?: number, extraFrustration?: number };
+export type Chastity = { keyholder?: Snowflake | "discarded"; timestamp?: number; extraFrustration?: number; keyFindChance?: number; oldKeyholder?: Snowflake };
 export type Vibe = { vibetype: string; intensity: number };
 
 export function assignChastity(user: Snowflake, keyholder: Snowflake): void;
@@ -61,7 +61,7 @@ export function addArousal(user: Snowflake, change: number): number;
 
 /**
  * Sets the user to 0 arousal and no recent orgasm
- * @param user 
+ * @param user
  */
 export function clearArousal(user: Snowflake): void;
 
