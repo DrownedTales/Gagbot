@@ -372,10 +372,7 @@ function tryOrgasm(user) {
 
   if (canOrgasm && arousal * (RANDOM_BIAS + Math.random()) / (RANDOM_BIAS + 1) >= orgasmLimit * denialCoefficient) {
     process.arousal[user].lastOrgasm = now;
-    process.arousal[user].timestamp = now + ORGASM_COOLDOWN;
-    process.arousal[user].prev = 0;
-    process.arousal[user].prev2 = 0;
-    fs.writeFileSync(`${process.GagbotSavedFileDirectory}/arousal.txt`, JSON.stringify(process.arousal));
+    setArousalCooldown(user)
     const chastity = getChastity(user);
     if (chastity) {
       chastity.extraFrustration = 0;
@@ -394,6 +391,13 @@ function tryOrgasm(user) {
   }
 
   return false;
+}
+
+function setArousalCooldown(user) {
+  process.arousal[user].timestamp = now + ORGASM_COOLDOWN;
+  process.arousal[user].prev = 0;
+  process.arousal[user].prev2 = 0;
+  fs.writeFileSync(`${process.GagbotSavedFileDirectory}/arousal.txt`, JSON.stringify(process.arousal));
 }
 
 // modify when more things affect it
@@ -442,6 +446,7 @@ exports.getArousal = getArousal;
 exports.addArousal = addArousal;
 exports.clearArousal = clearArousal;
 exports.tryOrgasm = tryOrgasm;
+exports.setArousalCooldown = setArousalCooldown;
 
 exports.assignChastity = assignChastity
 exports.getChastity = getChastity

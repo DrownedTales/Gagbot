@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, MessageFlags } = require("discord.js");
 const { their } = require("./../functions/pronounfunctions.js");
 const { getConsent, handleConsent } = require("./../functions/interactivefunctions.js");
-const { tryOrgasm, getChastity } = require("../functions/vibefunctions.js");
+const { tryOrgasm, getChastity, setArousalCooldown } = require("../functions/vibefunctions.js");
 const { getHeavy } = require("../functions/heavyfunctions.js");
 
 module.exports = {
@@ -31,8 +31,7 @@ module.exports = {
 
         // cool off response, replace with something good
         interaction.reply(`[TMP] cool off`);
-        delete process.arousal[interaction.user.id];
-        fs.writeFileSync(`${process.GagbotSavedFileDirectory}/arousal.txt`, JSON.stringify(process.arousal));
+        setArousalCooldown(interaction.user.id);
       }
     } catch (err) {
       console.log(err);
