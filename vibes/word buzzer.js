@@ -4,7 +4,6 @@ const {
   TextInputBuilder,
   TextInputStyle,
   ActionRowBuilder,
-  time,
 } = require('discord.js');
 
 const { getUserVar, setUserVar } = require("../functions/usercontext.js");
