@@ -366,10 +366,8 @@ function tryOrgasm(user) {
 
   const now = Date.now();
   const arousal = getArousal(user);
-  const decayCoefficient = calcDecayCoefficient(user);
   const denialCoefficient = calcDenialCoefficient(user);
   const orgasmLimit = ORGASM_LIMIT;
-  const releaseStrength = RELEASE_STRENGTH;
   const canOrgasm = now - (process.arousal[user]?.lastOrgasm ?? 0) >= ORGASM_COOLDOWN;
 
   if (canOrgasm && arousal * (RANDOM_BIAS + Math.random()) / (RANDOM_BIAS + 1) >= orgasmLimit * denialCoefficient) {
@@ -377,6 +375,7 @@ function tryOrgasm(user) {
     process.arousal[user].timestamp = now + ORGASM_COOLDOWN;
     process.arousal[user].prev = 0;
     process.arousal[user].prev2 = 0;
+    fs.writeFileSync(`${process.GagbotSavedFileDirectory}/arousal.txt`, JSON.stringify(process.arousal));
     return true;
   }
 
