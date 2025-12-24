@@ -375,7 +375,8 @@ function tryOrgasm(user) {
   if (canOrgasm && arousal * (RANDOM_BIAS + Math.random()) / (RANDOM_BIAS + 1) >= orgasmLimit * denialCoefficient) {
     process.arousal[user].lastOrgasm = now;
     process.arousal[user].timestamp = now + ORGASM_COOLDOWN;
-    addArousal(user, -(decayCoefficient * decayCoefficient * releaseStrength * orgasmLimit) / UNBELTED_DECAY);
+    process.arousal[user].prev = 0;
+    process.arousal[user].prev2 = 0;
     return true;
   }
 
