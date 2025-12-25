@@ -110,7 +110,7 @@ function getFumbleChance(keyholder, locked) {
 }
 
 async function handleKeyFinding(message) {
-  const chanceModifier = message.content.length / 10;
+  const chanceModifier = Math.min(message.content.length / 20, 20);
 
   const findSuccessChance = calcFindSuccessChance(message.author.id);
   const findableKeys = [];
