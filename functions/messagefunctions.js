@@ -1,6 +1,6 @@
 const { WebhookClient, AttachmentBuilder } = require('discord.js');
 
-const messageSend = async (str, avatarURL, username) => {
+const messageSend = async (threadId, str, avatarURL, username) => {
     // When called, we want to do something with str and then send it.
     const webhookClient = new WebhookClient({ 
         id: process.env.WEBHOOKID, 
@@ -8,6 +8,7 @@ const messageSend = async (str, avatarURL, username) => {
     })
 
     webhookClient.send({
+        threadId: threadId,
         content: str,
         username: username,
         avatarURL: avatarURL,
@@ -19,7 +20,7 @@ const messageSend = async (str, avatarURL, username) => {
     })
 }
 
-const messageSendBot = async (str) => {
+const messageSendBot = async (threadId, str) => {
     // When called, we want to do something with str and then send it.
     const webhookClient = new WebhookClient({ 
         id: process.env.WEBHOOKID, 
@@ -27,13 +28,14 @@ const messageSendBot = async (str) => {
     })
 
     webhookClient.send({
+        threadId: threadId,
         content: str
     }).then(() => {
         return true
     })
 }
 
-const messageSendImg = async (str, avatarURL, username, msgid, spoiler) => {
+const messageSendImg = async (threadId, str, avatarURL, username, msgid, spoiler) => {
     // When called, we want to do something with str and then send it.
     const webhookClient = new WebhookClient({ 
         id: process.env.WEBHOOKID, 
@@ -47,6 +49,7 @@ const messageSendImg = async (str, avatarURL, username, msgid, spoiler) => {
     let file = new AttachmentBuilder(imageonsystem, { name: imageonsystem } );
 
     webhookClient.send({
+        threadId: threadId,
         content: str,
         username: username,
         avatarURL: avatarURL,

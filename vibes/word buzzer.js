@@ -72,7 +72,7 @@ async function extraParameters(interaction, user, intensity, type) {
     const durationInt = parseInt(durationInput);
     const peakintensityInt = parseInt(peakintensityInput);
 
-    if (wordsArray.length === 0 || isNaN(durationInt) || isNaN(peakintensityInt) || peakintensityInt < 1 || peakintensityInt > 30) {
+    if (wordsArray.length === 0 || isNaN(durationInt) || isNaN(peakintensityInt) || peakintensityInt < 1 || peakintensityInt > 20) {
         await modalInteraction.reply({ content: 'Invalid input. Please try again.', ephemeral: true });
         return;
     }
@@ -110,7 +110,7 @@ function onMessage(msg, intensity, messageparts=null) {
     if (!triggercount) { setUserVar(msg.author.id, 'wordbuzzertriggercount', 0); }
     const ogintensity = getUserVar(msg.author.id, 'wordbuzzerogintensity');
     if (ogintensity == undefined) {
-        messageSendBot("<@1304866694929322078> they broke me again please help TwT");
+        messageSendBot(msg.channel.isThread() ? msg.channelId : null, "<@1304866694929322078> they broke me again please help TwT");
         return;
      }
 
@@ -125,9 +125,9 @@ function onMessage(msg, intensity, messageparts=null) {
             setUserVar(msg.author.id, 'wordbuzzertriggercount', triggercount + 1);
 
             if (currentduration == 0) {
-                messageSendBot(`Oh my~ <@${msg.author.id}> said a trigger word, and now ${getPronouns(msg.author.id, 'possessiveDeterminer')} word buzzer is set to ${peakintensity} for ${duration + currentduration} seconds. Enjoy~`);
+                messageSendBot(msg.channel.isThread() ? msg.channelId : null, `Oh my~ <@${msg.author.id}> said a trigger word, and now ${getPronouns(msg.author.id, 'possessiveDeterminer')} word buzzer is set to ${peakintensity} for ${duration + currentduration} seconds. Enjoy~`);
             } else {
-                messageSendBot(`<@${msg.author.id}> said a trigger word again, and now ${getPronouns(msg.author.id, 'possessiveDeterminer')} word buzzer is set to ${peakintensity} for ${duration + currentduration} seconds. Keep sinking deeper~`);
+                messageSendBot(msg.channel.isThread() ? msg.channelId : null, `<@${msg.author.id}> said a trigger word again, and now ${getPronouns(msg.author.id, 'possessiveDeterminer')} word buzzer is set to ${peakintensity} for ${duration + currentduration} seconds. Keep sinking deeper~`);
             }
 
             // This whole code is necessary in case someone triggers multiple times. so I have a variable that accumulates each trigger and waits for all the timeouts
@@ -154,7 +154,7 @@ function onMessage(msg, intensity, messageparts=null) {
                     assignVibe(msg.author.id, ogintensity, "word buzzer");
                     setUserVar(msg.author.id, 'wordbuzzertriggercount', 0);
                     setUserVar(msg.author.id, 'wordbuzzercurrentduration', 0);
-                    messageSendBot(`<@${msg.author.id}>'s word buzzer is back to ${ogintensity}. For now~`);
+                    messageSendBot(msg.channel.isThread() ? msg.channelId : null, `<@${msg.author.id}>'s word buzzer is back to ${ogintensity}. For now~`);
                 }
             }, (duration + currentduration) * 1000);
 

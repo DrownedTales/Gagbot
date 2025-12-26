@@ -5,7 +5,7 @@ const { messageSendBot } = require("../functions/messagefunctions.js");
 
 function getRandomCount(intensity) {
     // Less probability to change the more intense. cuz I'm evil~
-    return Math.floor(Math.random() * 4) + Math.ceil(Math.random() * 4 * (intensity / 30));
+    return Math.floor(Math.random() * 4) + Math.ceil(Math.random() * 4 * (intensity / 20));
 }
 
 function onAssign (user, intensity, interaction = null) {
@@ -23,7 +23,7 @@ function onMessage (msg, intensity, messageparts=null) {
         let difference = 0;
         let tries = 0;
         do {
-            newintensity = Math.min(Math.floor(Math.random() * 30) + 1, 30);
+            newintensity = Math.min(Math.floor(Math.random() * 20) + 1, 20);
             difference = Math.abs(newintensity - intensity);
             tries++;
         } while (difference <= 5 || tries > 15);  // Prevent infinite loops
@@ -31,9 +31,9 @@ function onMessage (msg, intensity, messageparts=null) {
         assignVibe(msg.author.id, newintensity, "random vibe");
 
         if (intensity <= newintensity) {
-            messageSendBot(`<@${msg.author.id}>'s random vibe changed it's intensity to ${newintensity}. Better luck next time~`);
+            messageSendBot(msg.channel.isThread() ? msg.channelId : null, `<@${msg.author.id}>'s random vibe changed it's intensity to ${newintensity}. Better luck next time~`);
         } else {
-            messageSendBot(`<@${msg.author.id}>'s random vibe changed it's intensity to ${newintensity}. Looks like ${getPronouns(msg.author.id, 'subject')} ${getPronouns(msg.author.id, 'subject') != "they" ? "was" : "were"} having too much fun~`);
+            messageSendBot(msg.channel.isThread() ? msg.channelId : null, `<@${msg.author.id}>'s random vibe changed it's intensity to ${newintensity}. Looks like ${getPronouns(msg.author.id, 'subject')} ${getPronouns(msg.author.id, 'subject') != "they" ? "was" : "were"} having too much fun~`);
         }
 
         setUserVar(msg.author.id, "random_vibe_count", getRandomCount(newintensity));

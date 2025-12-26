@@ -2,8 +2,9 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const { messageSend, messageSendImg, messageSendDev } = require(`./../functions/messagefunctions.js`)
-const { getVibe, stutterText } = require(`./../functions/vibefunctions.js`)
 const { getCorset, corsetLimitWords } = require(`./../functions/corsetfunctions.js`)
+const { stutterText } = require(`./../functions/vibefunctions.js`);
+const { getVibeEquivalent } = require('./vibefunctions.js');
 
 // Grab all the command files from the commands directory
 const gagtypes = [];
@@ -121,7 +122,7 @@ const splitMessage = (text) => {
     return output;
 }
 
-const garbleMessage = async (msg) => {
+const garbleMessage = async (threadId, msg) => {
     try {
         let outtext = '';
         let messageparts = splitMessage(msg.content);
@@ -147,9 +148,8 @@ const garbleMessage = async (msg) => {
         console.log(msg.content)
         
         // Vibrators first
-        if (process.vibe == undefined) { process.vibe = {} }
-        if (process.vibe[msg.author.id]) {
-
+        const intensity = getVibeEquivalent(msg.author.id)
+        if (intensity) {
             modifiedmessage = true;
 
             for (const entry of process.vibe[msg.author.id]) {
@@ -284,7 +284,7 @@ const garbleMessage = async (msg) => {
                         msg.channel.send(msg.content)
                         outtext = "Mistress <@125093095405518850>, I broke the bot! The bot said what I was trying to say, for debugging purposes."
                     }
-                    messageSendImg(outtext, msg.member.displayAvatarURL(), msg.member.displayName, msg.id, spoiler).then(() => {
+                    messageSendImg(threadId, outtext, msg.member.displayAvatarURL(), msg.member.displayName, msg.id, spoiler).then(() => {
                         msg.delete().then(() => {
                             fs.rmSync(`./${spoilertext}downloadedimage_${msg.id}.png`)
                         });
@@ -297,7 +297,7 @@ const garbleMessage = async (msg) => {
                     outtext = "Mistress <@125093095405518850>, I broke the bot! The bot said what I was trying to say, for debugging purposes."
                 }
                 if (outtext.length == 0) { outtext = "Something went wrong. Ping <@125093095405518850> and let her know!"}
-                let sentmessage = messageSend(outtext, msg.member.displayAvatarURL(), msg.member.displayName).then(() => {
+                let sentmessage = messageSend(threadId, outtext, msg.member.displayAvatarURL(), msg.member.displayName).then(() => {
                     msg.delete();
                 })
             }
