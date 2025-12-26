@@ -11,8 +11,6 @@ const RESET_LIMT = 0.1;
 const STUTTER_LIMIT = 1;
 // the arousal needed for an unbelted user to orgasm
 const ORGASM_LIMIT = 10;
-// the coefficient for how much arousal is lost on orgasm
-const RELEASE_STRENGTH = 16;
 // the rate of arousal decay without orgasms when unbelted
 const UNBELTED_DECAY = 0.2;
 // the maximum frustration that can be reached
@@ -356,8 +354,8 @@ function clearArousal(user) {
 }
 
 function calcNextArousal(prev, prev2, growthCoefficient, decayCoefficient, timeStep) {
-  const noDecay = prev + timeStep * growthCoefficient * Math.random();
-  let next = noDecay - timeStep * Math.max(decayCoefficient * (prev + prev2 / 2), 0.1);
+  const noDecay = prev + timeStep * growthCoefficient * (RANDOM_BIAS + Math.random()) / (RANDOM_BIAS + 1);
+  const next = noDecay - timeStep * decayCoefficient * Math.max((prev + prev2 / 2), 0.1);
   return next;
 }
 
