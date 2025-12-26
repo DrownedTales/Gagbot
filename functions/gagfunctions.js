@@ -79,14 +79,16 @@ const splitMessage = (text) => {
      * 1.) Match User Tags. (@Dollminatrix)
      * 2.) Match >////<
      * 3.) Match Code Blocks
-     * 4.) Match ANSI Colors
-     * 5.) Match Italicized Text, WITHOUT false-positives on bolded text.
-     * 6.) Match Website URLs - Stack Overflow-sourced URL matcher plus Doll's HTTP(S) matching.
-     * 7.) Match Emoji - <:Emojiname:000000000000000000>
-     * 8.) Match Base Unicode Emoji - My stack is overflowing.
+     * 4.) Match ANSI Colored Username Block ("DOLL-0014:")
+     * 5.) Match ANSI Colors
+     * 6.) Match Italicized Text, WITHOUT false-positives on bolded text.
+     * 7.) Match Italicized Text using '_', WITHOUT false-positives on underlined text.
+     * 8.) Match Website URLs - Stack Overflow-sourced URL matcher plus Doll's HTTP(S) matching.
+     * 9.) Match Emoji - <:Emojiname:000000000000000000>
+     * A.) Match Base Unicode Emoji - My stack is overflowing.
     **************************************************************************************/
-    //             |-  Tags -| |>///<| |Match code block | |ANSI Colors-| |--------   Match italic text   -------| |----------------------  Match website URLs     ---------------------------------------------------| |--- Emojis ---| |--- Unicode Emoji -----------------------------------------------|
-    const regex = /(<@[0-9]+>)|(>\/+<)|(```((ansi|js)\n)?)|(\u001b\[.+?m)|(((?<!\*)\*{1})(\*{2})?([^\*]|\*{2})+\*)|(<?https?\:\/\/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)>?)|(<:[^:]+:[^>]+>)|(\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/g
+    //             |-  Tags -| |>///<| |Match code block | |------------ ANSI Color Username Block --------| |-ANSI Colors -| |--------   Match italic text   -------| |---  Match underscore italic text-----| |----------------------  Match website URLs     ---------------------------------------------------| |---- Emojis ----| |--- Unicode Emoji -----------------------------------------------|
+    const regex = /(<@[0-9]+>)|(>\/+<)|(```((ansi|js)\n)?)|(\u001b\[[0-9];[0-9][0-9]m([^\u0000-\u0020]+: ?))|(\u001b\[.+?m) ?|(((?<!\*)\*{1})(\*{2})?([^\*]|\*{2})+\*)|(((?<!\_)\_{1})(\_{2})?([^\_]|\_{2})+\_)|(<?https?\:\/\/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)>?)|(<a?:[^:]+:[^>]+>)|(\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])|\n/g
 
     let output = [];
     let deepCopy = text.split()[0]
@@ -124,6 +126,9 @@ const splitMessage = (text) => {
 
 const garbleMessage = async (threadId, msg) => {
     try {
+        // fast-track if the message is just emotes and spaces
+        if (msg.content.match(/^((<a?:[^:]+:[^>]+>)|(\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])|\s|\n)+$/)) return;
+
         let outtext = '';
         let messageparts = splitMessage(msg.content);
         let modifiedmessage = false;
@@ -208,16 +213,16 @@ const garbleMessage = async (threadId, msg) => {
         }
         // Gags now
         if (process.gags == undefined) { process.gags = {} }
-        if (process.gags[`<@${msg.author.id}>`]) {
+        if (process.gags[`${msg.author.id}`]) {
             // Grab all the command files from the commands directory
             const gagtypes = [];
             const commandsPath = path.join(__dirname, '..', 'gags');
             const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 
-            if (commandFiles.includes(process.gags[`<@${msg.author.id}>`].gagtype + ".js")) {
+            if (commandFiles.includes(process.gags[`${msg.author.id}`].gagtype + ".js")) {
                 modifiedmessage = true;
-                let gaggarble = require(path.join(commandsPath, `${process.gags[`<@${msg.author.id}>`].gagtype}.js`))
-                let intensity = process.gags[`<@${msg.author.id}>`].intensity ? process.gags[`<@${msg.author.id}>`].intensity : 5
+                let gaggarble = require(path.join(commandsPath, `${process.gags[`${msg.author.id}`].gagtype}.js`))
+                let intensity = process.gags[`${msg.author.id}`].intensity ? process.gags[`${msg.author.id}`].intensity : 5
                 console.log(messageparts);
                 if (gaggarble.messagebegin) {
                     try {

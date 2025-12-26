@@ -5,13 +5,12 @@ const { getMitten } = require("./gagfunctions");
 const { optins } = require("./optinfunctions");
 const fs = require("fs");
 const { getUserVar, setUserVar } = require("./usercontext");
+const { getHeavy } = require("./heavyfunctions");
 
 // the minimum time before attempts at using keys can succeed after they fumble
 const MIN_FUMBLE_TIMEOUT = 60000;
 // the maximum time before attempts at using keys can succeed after they fumble
 const MAX_FUMBLE_TIMEOUT = 180000;
-// the minimum time between messages from a user that can find keys
-const KEYFINDING_COOLDOWN = 60 * 1000;
 
 // return true if the user fumbles
 function rollKeyFumble(keyholder, locked) {
@@ -111,15 +110,13 @@ function getFumbleChance(keyholder, locked) {
 }
 
 async function handleKeyFinding(message) {
-  const now = Date.now();
-  if (now - (getUserVar(message.author.id, "lastKeyFindTimestamp") ?? 0) < KEYFINDING_COOLDOWN) return;
-  setUserVar(message.author.id, "lastKeyFindTimestamp", now);
+  const chanceModifier = Math.min(message.content.length / 20, 20);
 
   const findSuccessChance = calcFindSuccessChance(message.author.id);
   const findableKeys = [];
 
-  for ([lockedUser, chance] of getFindableChastityKeys(message.author.id)) findableKeys.push([lockedUser, chance, findChastityKey, "chastity belt"]);
-  for ([lockedUser, chance] of getFindableCollarKeys(message.author.id)) findableKeys.push([lockedUser, chance, findCollarKey, "collar"]);
+  for ([lockedUser, chance] of getFindableChastityKeys(message.author.id)) findableKeys.push([lockedUser, chance * chanceModifier, findChastityKey, "chastity belt"]);
+  for ([lockedUser, chance] of getFindableCollarKeys(message.author.id)) findableKeys.push([lockedUser, chance * chanceModifier, findCollarKey, "collar"]);
 
   shuffleArray(findableKeys);
 
@@ -148,7 +145,7 @@ async function sendFindFumbleMessage(message, lockedUser, restraint) {
 }
 
 function calcFindSuccessChance(user) {
-  // currently just make it so mittens might make you fail
+  if (getHeavy(user)) return 0;
   if (getMitten(user)) return 0.5;
   else return 1;
 }
