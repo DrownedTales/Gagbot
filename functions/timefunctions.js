@@ -13,6 +13,7 @@ const parseTime = (text) => {
         let days    = num(/(\d+)\s*d(?:ay|ays)?/);
         let hours   = num(/(\d+)\s*h(?:our|rs?)?/);
         let minutes = num(/(\d+)\s*m(?:in|ins?)?/);
+        let seconds = num(/(\d+)\s*s(?:ec|ecs?)?/);
 
         // Create date output
         let dateout = new Date();
@@ -22,6 +23,8 @@ const parseTime = (text) => {
         dateout.setTime(dateout.getTime() + hours * 60 * 60 * 1000);
         // add minutes
         dateout.setTime(dateout.getTime() + minutes * 60 * 1000);
+        // add seconds
+        dateout.setTime(dateout.getTime() + seconds * 1000);
 
         return dateout
     }
@@ -39,6 +42,8 @@ const calculateTimeout = (text) => {
         return 0;
     }
 }
+
+
 
 exports.parseTime = parseTime;
 exports.calculateTimeout = calculateTimeout;
